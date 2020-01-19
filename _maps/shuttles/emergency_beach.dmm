@@ -1,0 +1,487 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"c" = (
+/turf/open/floor/plating/beach/coastline_t,
+/area/shuttle/escape)
+"d" = (
+/obj/structure/shuttle/engine/heater{
+	dir = 1
+	},
+/obj/structure/window/reinforced,
+/turf/open/floor/plating/airless,
+/area/shuttle/escape)
+"f" = (
+/turf/open/floor/plating/beach/coastline_t/sandwater_inner,
+/area/shuttle/escape)
+"h" = (
+/obj/structure/flora/ausbushes/lavendergrass,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"j" = (
+/turf/open/floor/plating/beach/coastline_b,
+/area/shuttle/escape)
+"m" = (
+/obj/structure/flora/ausbushes/fullgrass,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"n" = (
+/obj/structure/flora/ausbushes/ppflowers,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"p" = (
+/turf/open/floor/plating/beach/coastline_t/sandwater_inner{
+	dir = 8
+	},
+/area/shuttle/escape)
+"v" = (
+/turf/open/space/basic,
+/area/space)
+"w" = (
+/obj/structure/flora/ausbushes/leafybush,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"y" = (
+/turf/open/floor/plating/beach/sand,
+/area/shuttle/escape)
+"z" = (
+/turf/open/floor/wood,
+/area/shuttle/escape)
+"D" = (
+/obj/structure/fluff/beach_umbrella/engine,
+/turf/open/floor/plating/beach/sand,
+/area/shuttle/escape)
+"F" = (
+/obj/structure/fluff/beach_umbrella/security,
+/turf/open/floor/plating/beach/sand,
+/area/shuttle/escape)
+"H" = (
+/obj/structure/flora/ausbushes/ywflowers,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"K" = (
+/obj/structure/fluff/beach_umbrella,
+/turf/open/floor/plating/beach/sand,
+/area/shuttle/escape)
+"L" = (
+/obj/docking_port/mobile/emergency{
+	dir = 8;
+	dwidth = 5;
+	height = 25;
+	movement_force = list("KNOCKDOWN" = 3, "THROW" = 0);
+	name = "Beach emergency shuttle";
+	width = 14
+	},
+/turf/closed/wall/mineral/sandstone,
+/area/shuttle/escape)
+"N" = (
+/obj/structure/shuttle/engine/propulsion{
+	dir = 1
+	},
+/turf/open/floor/plating/airless,
+/area/shuttle/escape)
+"O" = (
+/obj/structure/flora/ausbushes/pointybush,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"P" = (
+/obj/structure/flora/ausbushes/brflowers,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"Q" = (
+/obj/structure/chair/comfy/plywood,
+/turf/open/floor/plating/beach/sand,
+/area/shuttle/escape)
+"S" = (
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"U" = (
+/turf/open/floor/plating/beach/water,
+/area/shuttle/escape)
+"V" = (
+/obj/structure/flora/ausbushes/sunnybush,
+/turf/open/floor/grass,
+/area/shuttle/escape)
+"X" = (
+/turf/closed/wall/mineral/sandstone,
+/area/shuttle/escape)
+"Z" = (
+/turf/open/floor/mineral/plastitanium/red/brig,
+/area/shuttle/escape)
+
+(1,1,1) = {"
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+v
+v
+v
+v
+"}
+(2,1,1) = {"
+X
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+y
+y
+y
+y
+y
+y
+y
+f
+X
+X
+X
+v
+v
+"}
+(3,1,1) = {"
+X
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+y
+y
+Q
+y
+y
+y
+y
+c
+j
+U
+X
+X
+v
+"}
+(4,1,1) = {"
+X
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+z
+y
+y
+K
+y
+y
+y
+y
+c
+j
+U
+U
+X
+X
+"}
+(5,1,1) = {"
+X
+X
+X
+z
+z
+z
+z
+n
+V
+S
+z
+z
+y
+y
+Q
+y
+y
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(6,1,1) = {"
+N
+d
+X
+z
+z
+z
+z
+w
+h
+S
+z
+z
+y
+y
+y
+y
+y
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(7,1,1) = {"
+N
+d
+X
+z
+z
+z
+z
+O
+m
+S
+z
+z
+y
+y
+y
+y
+y
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(8,1,1) = {"
+N
+d
+X
+z
+z
+z
+z
+P
+h
+n
+z
+z
+Q
+y
+y
+y
+y
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(9,1,1) = {"
+N
+d
+X
+z
+z
+z
+z
+V
+H
+S
+z
+z
+F
+y
+y
+y
+Q
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(10,1,1) = {"
+X
+X
+X
+X
+X
+z
+z
+H
+h
+P
+z
+z
+Q
+y
+y
+y
+D
+y
+y
+c
+j
+U
+U
+U
+X
+"}
+(11,1,1) = {"
+X
+Z
+Z
+Z
+X
+z
+z
+z
+z
+z
+z
+z
+y
+y
+y
+y
+Q
+y
+y
+c
+j
+U
+U
+X
+X
+"}
+(12,1,1) = {"
+X
+Z
+Z
+Z
+z
+z
+z
+z
+z
+z
+z
+z
+y
+y
+y
+y
+y
+y
+y
+c
+j
+U
+X
+X
+v
+"}
+(13,1,1) = {"
+X
+Z
+Z
+Z
+X
+z
+z
+z
+z
+z
+z
+z
+y
+y
+y
+y
+y
+y
+y
+p
+X
+X
+X
+v
+v
+"}
+(14,1,1) = {"
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+L
+X
+X
+X
+X
+v
+v
+v
+v
+"}

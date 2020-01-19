@@ -5,8 +5,15 @@
 /turf/open/floor/mineral/plastitanium/red/brig,
 /area/shuttle/escape)
 "aj" = (
-/obj/machinery/light{
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
 	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 8
 	},
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
@@ -47,6 +54,13 @@
 /area/shuttle/escape)
 "ck" = (
 /obj/structure/toilet,
+/turf/open/floor/plasteel/freezer,
+/area/shuttle/escape)
+"cl" = (
+/obj/structure/toilet,
+/obj/machinery/light/small{
+	dir = 1
+	},
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "co" = (
@@ -125,9 +139,6 @@
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "ex" = (
-/obj/machinery/light{
-	dir = 1
-	},
 /obj/effect/turf_decal/tile/purple{
 	dir = 1
 	},
@@ -139,6 +150,9 @@
 	dir = 8
 	},
 /obj/machinery/computer/aifixer,
+/obj/machinery/light/small{
+	dir = 1
+	},
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
 "eZ" = (
@@ -174,6 +188,9 @@
 /obj/item/radio/intercom{
 	name = "Station Intercom (General)";
 	pixel_y = -29
+	},
+/obj/machinery/light/small{
+	dir = 4
 	},
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
@@ -285,6 +302,22 @@
 /obj/structure/bedsheetbin/towel,
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
+"iQ" = (
+/obj/machinery/door/airlock{
+	name = "Restroom"
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 8
+	},
+/turf/open/floor/plasteel,
+/area/shuttle/escape)
 "ji" = (
 /obj/machinery/light,
 /obj/structure/table,
@@ -313,12 +346,6 @@
 	},
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
-"kP" = (
-/obj/item/twohanded/required/kirbyplants{
-	icon_state = "plant-21"
-	},
-/turf/open/floor/plasteel/dark,
-/area/shuttle/escape)
 "kV" = (
 /obj/machinery/computer/security{
 	dir = 8
@@ -339,6 +366,7 @@
 /obj/structure/toilet{
 	dir = 1
 	},
+/obj/machinery/light/small,
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "lH" = (
@@ -369,6 +397,9 @@
 /obj/structure/toilet,
 /obj/structure/window/reinforced/tinted{
 	dir = 4
+	},
+/obj/machinery/light/small{
+	dir = 1
 	},
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
@@ -405,6 +436,9 @@
 /obj/structure/toilet,
 /obj/structure/window/reinforced/tinted{
 	dir = 8
+	},
+/obj/machinery/light/small{
+	dir = 1
 	},
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
@@ -459,6 +493,9 @@
 /obj/structure/toilet{
 	dir = 4
 	},
+/obj/machinery/light/small{
+	dir = 8
+	},
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "rR" = (
@@ -469,6 +506,12 @@
 	},
 /obj/machinery/light{
 	dir = 4
+	},
+/turf/open/floor/plasteel,
+/area/shuttle/escape)
+"rY" = (
+/obj/machinery/door/airlock{
+	name = "Showers"
 	},
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
@@ -506,6 +549,7 @@
 /obj/structure/window/reinforced/tinted{
 	dir = 4
 	},
+/obj/machinery/light/small,
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "uh" = (
@@ -515,6 +559,7 @@
 /obj/structure/window/reinforced/tinted{
 	dir = 8
 	},
+/obj/machinery/light/small,
 /turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 "vp" = (
@@ -523,6 +568,9 @@
 	},
 /obj/structure/window/reinforced/tinted{
 	dir = 8
+	},
+/obj/machinery/light/small{
+	dir = 1
 	},
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
@@ -562,17 +610,16 @@
 /obj/structure/window/reinforced/tinted,
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
+"xa" = (
+/obj/machinery/light,
+/turf/open/floor/plasteel/freezer,
+/area/shuttle/escape)
 "xO" = (
 /obj/machinery/light/small{
 	dir = 4
 	},
 /obj/machinery/recharge_station,
 /turf/open/floor/plasteel/freezer,
-/area/shuttle/escape)
-"yX" = (
-/obj/structure/window/reinforced/tinted,
-/obj/structure/curtain,
-/turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
 "Ar" = (
 /obj/structure/table,
@@ -593,10 +640,18 @@
 /turf/template_noop,
 /area/template_noop)
 "Bb" = (
-/obj/structure/toilet{
+/obj/structure/bed,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
 	dir = 8
 	},
-/turf/open/floor/plasteel/freezer,
+/turf/open/floor/plasteel,
 /area/shuttle/escape)
 "Bq" = (
 /obj/machinery/door/airlock{
@@ -636,6 +691,9 @@
 /obj/structure/window/reinforced/tinted{
 	dir = 4
 	},
+/obj/machinery/light/small{
+	dir = 1
+	},
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
 "Gr" = (
@@ -658,7 +716,17 @@
 /obj/item/radio/intercom{
 	dir = 4;
 	name = "Station Intercom (General)";
-	pixel_y = 27
+	pixel_x = -27
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 8
 	},
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
@@ -708,10 +776,13 @@
 	},
 /turf/open/floor/mineral/plastitanium/red/brig,
 /area/shuttle/escape)
-"KZ" = (
-/obj/machinery/light{
-	dir = 1
+"Kd" = (
+/obj/machinery/door/airlock{
+	name = "Men's Restroom"
 	},
+/turf/open/floor/plasteel/freezer,
+/area/shuttle/escape)
+"KZ" = (
 /obj/effect/turf_decal/tile/yellow{
 	dir = 1
 	},
@@ -723,6 +794,13 @@
 	dir = 8
 	},
 /obj/machinery/computer/station_alert,
+/obj/machinery/light/small{
+	dir = 1
+	},
+/turf/open/floor/plasteel/dark,
+/area/shuttle/escape)
+"NB" = (
+/obj/machinery/door/airlock/public/glass,
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
 "Or" = (
@@ -774,12 +852,26 @@
 /obj/structure/toilet{
 	dir = 4
 	},
+/obj/machinery/light/small{
+	dir = 8
+	},
 /turf/open/floor/plasteel/dark,
 /area/shuttle/escape)
 "QT" = (
-/obj/structure/table,
-/obj/item/paper_bin,
-/obj/item/pen,
+/obj/structure/closet/crate/bin,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 8
+	},
+/obj/machinery/light{
+	dir = 4
+	},
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
 "RV" = (
@@ -818,7 +910,7 @@
 /obj/docking_port/mobile/emergency{
 	dwidth = 15;
 	height = 20;
-	name = "Cere emergency shuttle";
+	name = "Emergency bathroom shuttle";
 	width = 42
 	},
 /obj/structure/fans/tiny,
@@ -831,11 +923,19 @@
 /turf/open/floor/plasteel,
 /area/shuttle/escape)
 "Tz" = (
-/obj/machinery/door/airlock/public/glass{
-	name = "Emergency Shuttle Brig";
-	req_access_txt = "2"
+/obj/structure/table,
+/obj/structure/bedsheetbin/towel,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 4
 	},
-/turf/open/floor/mineral/plastitanium/red/brig,
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/neutral{
+	dir = 8
+	},
+/turf/open/floor/plasteel,
 /area/shuttle/escape)
 "VD" = (
 /obj/machinery/power/terminal{
@@ -854,6 +954,16 @@
 "WL" = (
 /turf/open/floor/mineral/plastitanium/red/brig,
 /area/shuttle/escape)
+"Xj" = (
+/obj/machinery/door/airlock{
+	name = "Women's Restroom"
+	},
+/turf/open/floor/plasteel/freezer,
+/area/shuttle/escape)
+"Xq" = (
+/obj/effect/spawner/structure/window/shuttle,
+/turf/open/floor/plasteel/dark,
+/area/shuttle/escape)
 "XK" = (
 /obj/machinery/door/airlock/shuttle{
 	name = "Emergency Shuttle Airlock"
@@ -869,6 +979,12 @@
 	dir = 8
 	},
 /turf/open/floor/plasteel/dark,
+/area/shuttle/escape)
+"Zn" = (
+/obj/machinery/light{
+	dir = 4
+	},
+/turf/open/floor/plasteel/freezer,
 /area/shuttle/escape)
 
 (1,1,1) = {"
@@ -930,7 +1046,7 @@ Pc
 hu
 gB
 WL
-co
+Xq
 hn
 pT
 DS
@@ -974,7 +1090,7 @@ WL
 WL
 WL
 WL
-co
+NB
 hn
 gZ
 hn
@@ -994,7 +1110,7 @@ vB
 hn
 hn
 hn
-hn
+Tu
 hn
 hn
 hn
@@ -1018,7 +1134,7 @@ Jp
 iI
 WL
 WL
-co
+Xq
 hn
 co
 ig
@@ -1059,9 +1175,9 @@ fg
 co
 co
 co
-DS
-Tz
-DS
+co
+co
+co
 pT
 hn
 pT
@@ -1101,13 +1217,13 @@ co
 vO
 co
 co
-hn
-hn
-hn
-hn
-hn
-hn
+aj
 Gz
+aj
+aj
+iQ
+hn
+hn
 hn
 hn
 hn
@@ -1145,11 +1261,11 @@ co
 PP
 kg
 co
-hn
-hn
-hn
-hn
-hn
+Bb
+QT
+Bb
+Tz
+co
 hn
 hn
 hn
@@ -1183,17 +1299,17 @@ Bt
 At
 At
 DS
-kP
+jY
 PP
 PP
 PP
 gF
 co
-aj
-hn
-hn
-hn
-hn
+co
+co
+co
+co
+pT
 hn
 hn
 hn
@@ -1210,7 +1326,7 @@ hn
 hn
 hn
 hn
-hn
+Tu
 hn
 hn
 hn
@@ -1229,7 +1345,7 @@ At
 co
 vp
 IK
-yX
+op
 PP
 PP
 co
@@ -1240,13 +1356,13 @@ hn
 hn
 hn
 hn
-hn
-hn
-hn
-hn
+co
+Bq
+co
+Bq
 co
 co
-hn
+rY
 co
 co
 co
@@ -1283,11 +1399,11 @@ hn
 hn
 hn
 hn
-QT
 hn
-hn
-hn
-hn
+co
+iz
+co
+iz
 co
 kA
 iD
@@ -1300,9 +1416,9 @@ iD
 iD
 tY
 co
-Bb
+iz
 co
-Bb
+iz
 co
 hn
 hn
@@ -1328,10 +1444,10 @@ hn
 hn
 hn
 hn
-hn
-hn
-hn
-hn
+co
+co
+co
+co
 co
 kA
 iD
@@ -1361,7 +1477,7 @@ At
 co
 FB
 wB
-yX
+op
 PP
 gU
 co
@@ -1372,13 +1488,13 @@ hn
 hn
 hn
 hn
-hn
-hn
-hn
-hn
+co
+rc
+co
+rc
 co
 kA
-iD
+Zn
 mb
 co
 pD
@@ -1403,7 +1519,7 @@ Bt
 At
 At
 DS
-kP
+jY
 PP
 PP
 PP
@@ -1416,10 +1532,10 @@ hn
 hn
 hn
 hn
-hn
-hn
-hn
-hn
+co
+Bq
+co
+Bq
 co
 co
 co
@@ -1457,7 +1573,7 @@ co
 co
 co
 co
-co
+pT
 hn
 hn
 hn
@@ -1467,14 +1583,14 @@ hn
 Bq
 lr
 co
-ck
+cl
 Bq
 hn
 hn
 hn
 hn
 hn
-hn
+gZ
 hn
 hn
 hn
@@ -1501,7 +1617,7 @@ ck
 Bq
 iD
 iD
-co
+Kd
 hn
 hn
 hn
@@ -1545,7 +1661,7 @@ co
 co
 iD
 iD
-Bq
+co
 hn
 hn
 hn
@@ -1588,7 +1704,7 @@ co
 ck
 Bq
 iD
-iD
+xa
 co
 hn
 hn
@@ -1604,11 +1720,11 @@ hn
 hn
 hn
 co
-iD
-iD
+cl
+Bq
 hn
-iD
-iD
+Bq
+lr
 co
 hn
 Tu
@@ -1633,7 +1749,7 @@ co
 co
 iD
 iD
-Bq
+Xj
 hn
 hn
 hn
@@ -1680,23 +1796,23 @@ iD
 co
 hn
 hn
+pT
+co
+DS
+DS
+DS
+DS
+DS
+DS
+DS
+DS
 co
 co
-DS
-DS
-DS
-DS
-DS
-DS
-DS
-DS
-co
-co
-iD
-iD
+cl
+Bq
 hn
-iD
-iD
+Bq
+lr
 co
 iz
 co
