@@ -79,6 +79,7 @@ import { SmokeMachine } from './interfaces/SmokeMachine';
 import { SolarControl } from './interfaces/SolarControl';
 import { SpaceHeater } from './interfaces/SpaceHeater';
 import { SpawnersMenu } from './interfaces/SpawnersMenu';
+import { StasisSleeper } from './interfaces/StasisSleeper';
 import { StationAlertConsole } from './interfaces/StationAlertConsole';
 import { SuitStorageUnit } from './interfaces/SuitStorageUnit';
 import { Tank } from './interfaces/Tank';
@@ -445,6 +446,10 @@ const ROUTES = {
   },
   spawners_menu: {
     component: () => SpawnersMenu,
+    scrollable: true,
+  },
+  stasis_sleeper: {
+    component: () => StasisSleeper,
     scrollable: true,
   },
   station_alert: {

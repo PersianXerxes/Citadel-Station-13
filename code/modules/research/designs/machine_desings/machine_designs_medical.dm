@@ -105,3 +105,11 @@
 	build_path = /obj/item/circuitboard/machine/bloodbankgen
 	departmental_flags = DEPARTMENTAL_FLAG_MEDICAL
 	category = list ("Medical Machinery")
+
+/datum/design/board/stasis_sleeper
+	name = "Machine Design (Stasis Sleeper)"
+	desc = "The circuit board for a stasis sleeper."
+	id = "stasis_sleeper"
+	build_path = /obj/item/circuitboard/machine/stasis_sleeper
+	category = list("Medical Machinery")
+	departmental_flags = DEPARTMENTAL_FLAG_MEDICAL
