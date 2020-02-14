@@ -9,13 +9,14 @@
 	state_open = TRUE
 	circuit = /obj/item/circuitboard/machine/stasis_sleeper
 	idle_power_usage = 40
-    active_power_usage = 340
-    req_access = list(ACCESS_CMO) //Used for reagent deletion and addition of non medicines
+	active_power_usage = 340
+	req_access = list(ACCESS_CMO) //Used for reagent deletion and addition of non medicines
 	var/stasis_enabled = TRUE
-    var/last_stasis_sound = FALSE
-    var/stasis_can_toggle = 0
-    var/mattress_state = "stasis_on"
-    var/efficiency = 1
+	var/last_stasis_sound = FALSE
+	var/stasis_can_toggle = 0
+	var/mattress_state = "stasis_on"
+	var/obj/effect/overlay/vis/mattress_on
+	var/efficiency = 1
 	var/min_health = 30
 	var/list/available_chems
 	var/controls_inside = FALSE
@@ -36,7 +37,6 @@
 	update_icon()
 	reset_chem_buttons()
 	RefreshParts()
-	add_inital_chems()
 
 /obj/machinery/stasis_sleeper/proc/stasis_running()
     return stasis_enabled && is_operational()
@@ -48,7 +48,7 @@
 
 /obj/machinery/stasis_sleeper/power_change()
     . = ..()
-    player_power_sound()
+    play_power_sound()
     update_icon()
 
 /obj/machinery/stasis_sleeper/on_deconstruction()
@@ -56,15 +56,6 @@
 	buffer.volume = reagents.maximum_volume
 	buffer.reagents.maximum_volume = reagents.maximum_volume
 	reagents.trans_to(buffer.reagents, reagents.total_volume)
-
-/obj/machinery/stasis_sleeper/proc/add_inital_chems()
-	for(var/i in available_chems)
-		var/datum/reagent/R = reagents.has_reagent(i)
-		if(!R)
-			reagents.add_reagent(i, (20))
-			continue
-		if(R.volume < 20)
-			reagents.add_reagent(i, (20 - R.volume))
 
 /obj/machinery/stasis_sleeper/RefreshParts()
 	var/E
@@ -97,22 +88,40 @@
 
 /obj/machinery/stasis_sleeper/update_icon()
 	icon_state = initial(icon_state)
+	var/_running = stasis_running()
+	var/list/overlays_to_remove = managed_vis_overlays
+	
 	if(state_open)
 		icon_state += "-open"
+	
+	if(mattress_state)
+		if(!mattress_on || !managed_vis_overlays)
+			mattress_on = SSvis_overlays.add_vis_overlay(src, icon, mattress_state, layer, plane, dir, alpha = 0, unique = TRUE)
+		if(mattress_on.alpha ? !_running : _running) //check the inverse of _running compared to truthy alpha, to see if they differ
+			var/new_alpha = _running ? 255 : 0
+			var/easing_direction = _running ? EASE_OUT : EASE_IN
+			animate(mattress_on, alpha = new_alpha, time = 50, easing = CUBIC_EASING|easing_direction)
+
+	overlays_to_remove = managed_vis_overlays - mattress_on
+
+	SSvis_overlays.remove_vis_overlay(src, overlays_to_remove)
+
+	/*if(occupant)
+		SSvis_overlays.add_vis_overlay(src, 'icons/obj/machines/stasis.dmi', "tubes", LYING_MOB_LAYER + 0.1, plane, dir) //using vis_overlays instead of normal overlays for mouse_opacity here
+	*/
 
 /obj/machinery/stasis_sleeper/container_resist(mob/living/AM)
 	if(AM == occupant)
 		var/mob/living/L = AM
 		if(L.IsInStasis())
 			thaw_them(L)
-    . = ..()
-    visible_message("<span class='notice'>[occupant] emerges from [src]!</span>",
-		"<span class='notice'>You climb out of [src]!</span>")
+		visible_message("<span class='notice'>[occupant] emerges from [src]!</span>",
+			"<span class='notice'>You climb out of [src]!</span>")
 	open_machine()
 
-/obj/machinery/stasis_sleeper/Exited(atom/movable/AM, atom/newloc)
+/obj/machinery/stasis_sleeper/Exited(atom/movable/AM,atom/newloc)
 	if (!state_open && AM == occupant)
-		container_resist(user)
+		container_resist(AM)
 
 /obj/machinery/stasis_sleeper/relaymove(mob/user)
 	if (!state_open)
@@ -220,7 +229,7 @@
 
 /obj/machinery/stasis_sleeper/examine(mob/user)
 	. = ..()
-	. += "<span class='notice'>Alt-click [src] to [state_open ? "close" : "open"] it.</span>"
+	to_chat(user, "<span class='notice'>Alt-click [src] to [state_open ? "close" : "open"] it.</span>")
 
 /obj/machinery/stasis_sleeper/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, \
 									datum/tgui/master_ui = null, datum/ui_state/state = GLOB.notcontained_state)
@@ -230,7 +239,7 @@
 
 	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
 	if(!ui)
-		ui = new(user, src, ui_key, "sleeper", name, 550, 700, master_ui, state)
+		ui = new(user, src, ui_key, "stasis_sleeper", name, 550, 700, master_ui, state)
 		ui.open()
 
 /obj/machinery/stasis_sleeper/proc/chill_out(mob/living/target)
@@ -262,16 +271,12 @@
 	var/list/data = list()
 	data["occupied"] = occupant ? 1 : 0
 	data["open"] = state_open
-    data["stasis"] = stasis_enabled
+	data["stasis"] = stasis_enabled
 	data["efficiency"] = efficiency
 	data["current_vol"] = reagents.total_volume
 	data["tot_capacity"] = reagents.maximum_volume
 
 	data["chems"] = list()
-	for(var/chem in available_chems)
-		var/datum/reagent/R = reagents.has_reagent(chem)
-		R = GLOB.chemical_reagents_list[chem]
-		data["synthchems"] += list(list("name" = R.name, "id" = R.type, "synth_allowed" = synth_allowed(chem)))
 	for(var/datum/reagent/R in reagents.reagent_list)
 		data["chems"] += list(list("name" = R.name, "id" = R.type, "vol" = R.volume, "purity" = R.purity, "allowed" = chem_allowed(R.type)))
 
@@ -300,34 +305,33 @@
 		data["occupant"]["toxLoss"] = mob_occupant.getToxLoss()
 		data["occupant"]["fireLoss"] = mob_occupant.getFireLoss()
 		data["occupant"]["cloneLoss"] = mob_occupant.getCloneLoss()
+		data["occupant"]["radiation"] = mob_occupant.radiation
 		data["occupant"]["brainLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_BRAIN)
+		data["occupant"]["eyeLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_EYES)
+		data["occupant"]["earLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_EARS)
+		data["occupant"]["liverLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_LIVER)
+		data["occupant"]["heartLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_HEART)
 		data["occupant"]["reagents"] = list()
 		if(mob_occupant.reagents && mob_occupant.reagents.reagent_list.len)
 			for(var/datum/reagent/R in mob_occupant.reagents.reagent_list)
 				data["occupant"]["reagents"] += list(list("name" = R.name, "volume" = R.volume))
-		data["occupant"]["failing_organs"] = list()
 		var/mob/living/carbon/C = mob_occupant
-		if(C)
-			for(var/obj/item/organ/Or in C.getFailingOrgans())
-				if(istype(Or, /obj/item/organ/brain))
-					continue
-				data["occupant"]["failing_organs"] += list(list("name" = Or.name))
-
-		if(mob_occupant.has_dna()) // Blood-stuff is mostly a copy-paste from the healthscanner.
-			var/blood_id = C.get_blood_id()
-			if(blood_id)
-				data["occupant"]["blood"] = list() // We can start populating this list.
-				var/blood_type = C.dna.blood_type
-				if(blood_id != "blood") // special blood substance
-					var/datum/reagent/R = GLOB.chemical_reagents_list[blood_id]
-					if(R)
-						blood_type = R.name
-					else
-						blood_type = blood_id
-				data["occupant"]["blood"]["maxBloodVolume"] = (BLOOD_VOLUME_NORMAL*C.blood_ratio)
-				data["occupant"]["blood"]["currentBloodVolume"] = C.blood_volume
-				data["occupant"]["blood"]["dangerBloodVolume"] = BLOOD_VOLUME_SAFE
-				data["occupant"]["blood"]["bloodType"] = blood_type
+		if(istype(C)) //Non-carbons shouldn't be able to enter sleepers, but this is to prevent runtimes if something ever breaks
+			if(mob_occupant.has_dna()) // Blood-stuff is mostly a copy-paste from the healthscanner.
+				var/blood_id = C.get_blood_id()
+				if(blood_id)
+					data["occupant"]["blood"] = list() // We can start populating this list.
+					var/blood_type = C.dna.blood_type
+					if(!(blood_id in GLOB.blood_reagent_types)) // special blood substance
+						var/datum/reagent/R = GLOB.chemical_reagents_list[blood_id]
+						if(R)
+							blood_type = R.name
+						else
+							blood_type = blood_id
+					data["occupant"]["blood"]["maxBloodVolume"] = (BLOOD_VOLUME_NORMAL*C.blood_ratio)
+					data["occupant"]["blood"]["currentBloodVolume"] = C.blood_volume
+					data["occupant"]["blood"]["dangerBloodVolume"] = BLOOD_VOLUME_SAFE
+					data["occupant"]["blood"]["bloodType"] = blood_type
 	return data
 
 /obj/machinery/stasis_sleeper/ui_act(action, params)
@@ -342,6 +346,15 @@
 			else
 				open_machine()
 			. = TRUE
+		if("stasis")
+			if(world.time >= stasis_can_toggle)
+				stasis_enabled = !stasis_enabled
+				stasis_can_toggle = world.time + STASIS_TOGGLE_COOLDOWN
+				playsound(src, 'sound/machines/click.ogg', 60, TRUE)
+				play_power_sound()
+				update_icon()
+		if("dialysis")
+			return
 		if("inject")
 			var/chem = text2path(params["chem"])
 			var/amount = text2num(params["volume"])
@@ -353,11 +366,6 @@
 				. = TRUE
 				if(scrambled_chems && prob(5))
 					to_chat(usr, "<span class='warning'>Chemical system re-route detected, results may not be as expected!</span>")
-		if("synth")
-			var/chem = text2path(params["chem"])
-			if(!is_operational())
-				return
-			reagents.add_reagent(chem_buttons[chem], 10) //other_purity = 0.75 for when the mechanics are in
 		if("purge")
 			var/chem = text2path(params["chem"])
 			if(allowed(usr))

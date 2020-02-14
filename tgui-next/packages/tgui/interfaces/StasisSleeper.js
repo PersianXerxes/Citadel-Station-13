@@ -2,13 +2,18 @@ import { useBackend } from '../backend';
 import { Box, Section, LabeledList, Button, ProgressBar } from '../components';
 import { Fragment } from 'inferno';
 
-export const Sleeper = props => {
+export const StasisSleeper = props => {
   const { act, data } = useBackend(props);
 
   const {
-    open,
-    occupant = {},
     occupied,
+    open,
+    stasis,
+    dialysis,
+    occupant = [],
+    efficiency,
+    current_vol,
+    tot_capacity,
   } = data;
 
   const preSortChems = data.chems || [];
@@ -90,18 +95,46 @@ export const Sleeper = props => {
                 color={occupant.brainLoss ? 'bad' : 'good'}>
                 {occupant.brainLoss ? 'Abnormal' : 'Healthy'}
               </LabeledList.Item>
+              <LabeledList.Item
+                label="Eyes"
+                color={occupant.eyeLoss ? 'bad' : 'good'}>
+                {occupant.eyeLoss ? 'Abnormal' : 'Healthy'}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label="Ears"
+                color={occupant.earLoss ? 'bad' : 'good'}>
+                {occupant.earLoss ? 'Abnormal' : 'Healthy'}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label="Liver"
+                color={occupant.liverLoss ? 'bad' : 'good'}>
+                {occupant.liverLoss ? 'Abnormal' : 'Healthy'}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label="Heart"
+                color={occupant.heartLoss ? 'bad' : 'good'}>
+                {occupant.heartLoss ? 'Abnormal' : 'Healthy'}
+              </LabeledList.Item>
             </LabeledList>
           </Fragment>
         )}
       </Section>
       <Section
-        title="Medicines"
+        title="Treatments"
         minHeight="205px"
         buttons={(
-          <Button
-            icon={open ? 'door-open' : 'door-closed'}
-            content={open ? 'Open' : 'Closed'}
-            onClick={() => act('door')} />
+          <Fragment>
+            <Button
+              icon={open ? 'door-open' : 'door-closed'}
+              content={open ? 'Open' : 'Closed'}
+              onClick={() => act('door')} />
+            <Button
+              content={stasis ? 'Stasis Active' : 'Stasis Disabled'}
+              onClick={() => act('stasis')} />
+            <Button
+              content={dialysis ? 'Dialysis Active' : 'Dialysis Disabled'}
+              onClick={() => act('dialysis')} />
+          </Fragment>
         )}>
         {chems.map(chem => (
           <Button

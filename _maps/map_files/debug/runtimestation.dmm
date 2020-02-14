@@ -253,12 +253,8 @@
 	dir = 4
 	},
 /obj/machinery/portable_atmospherics/canister/nitrous_oxide,
-/obj/effect/turf_decal/bot{
-	dir = 2
-	},
-/turf/open/floor/plasteel{
-	dir = 2
-	},
+/obj/effect/turf_decal/bot,
+/turf/open/floor/plasteel,
 /area/engine/atmos)
 "aO" = (
 /obj/machinery/atmospherics/components/binary/pump/on{
@@ -370,12 +366,8 @@
 	dir = 4
 	},
 /obj/machinery/portable_atmospherics/canister,
-/obj/effect/turf_decal/bot{
-	dir = 2
-	},
-/turf/open/floor/plasteel{
-	dir = 2
-	},
+/obj/effect/turf_decal/bot,
+/turf/open/floor/plasteel,
 /area/engine/atmos)
 "bc" = (
 /obj/machinery/atmospherics/components/binary/pump/on{
@@ -1407,8 +1399,8 @@
 	height = 5;
 	id = "laborcamp_home";
 	name = "fore bay 1";
-	width = 9;
-	roundstart_template = /datum/map_template/shuttle/labour/box
+	roundstart_template = /datum/map_template/shuttle/labour/box;
+	width = 9
 	},
 /turf/open/space/basic,
 /area/space)
@@ -1419,8 +1411,8 @@
 	height = 15;
 	id = "arrivals_stationary";
 	name = "arrivals";
-	width = 7;
-	roundstart_template = /datum/map_template/shuttle/arrival/box
+	roundstart_template = /datum/map_template/shuttle/arrival/box;
+	width = 7
 	},
 /turf/open/space/basic,
 /area/space)
@@ -1817,7 +1809,6 @@
 /area/hallway/secondary/entry)
 "fe" = (
 /obj/machinery/button/door{
-	dir = 2;
 	id = "cargounload";
 	layer = 4;
 	name = "Loading Doors";
@@ -1858,7 +1849,6 @@
 /area/quartermaster/storage)
 "fi" = (
 /obj/docking_port/stationary{
-	dir = 1;
 	dwidth = 1;
 	height = 4;
 	roundstart_template = /datum/map_template/shuttle/escape_pod/default;
@@ -1899,7 +1889,6 @@
 /area/quartermaster/storage)
 "fp" = (
 /obj/docking_port/stationary{
-	dheight = 0;
 	dir = 2;
 	dwidth = 9;
 	height = 25;
@@ -2067,9 +2056,7 @@
 /turf/open/floor/plasteel,
 /area/storage/primary)
 "fF" = (
-/obj/effect/turf_decal/stripes/line{
-	dir = 2
-	},
+/obj/effect/turf_decal/stripes/line,
 /obj/effect/turf_decal/stripes/line{
 	dir = 1
 	},
@@ -2299,9 +2286,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/machinery/computer/shuttle/mining{
-	dir = 2
-	},
+/obj/machinery/computer/shuttle/mining,
 /turf/open/floor/plasteel,
 /area/quartermaster/miningoffice)
 "gi" = (
@@ -2325,8 +2310,8 @@
 	height = 5;
 	id = "mining_home";
 	name = "mining shuttle bay";
-	width = 7;
-	roundstart_template = /datum/map_template/shuttle/mining/box
+	roundstart_template = /datum/map_template/shuttle/mining/box;
+	width = 7
 	},
 /turf/open/space/basic,
 /area/space)
@@ -2864,6 +2849,15 @@
 "xj" = (
 /turf/open/floor/plasteel,
 /area/hydroponics)
+"xQ" = (
+/obj/effect/turf_decal/tile/blue{
+	dir = 8
+	},
+/obj/machinery/stasis_sleeper,
+/turf/open/floor/plasteel/white/corner{
+	dir = 1
+	},
+/area/medical/medbay)
 "yl" = (
 /obj/structure/chair/stool/bar,
 /obj/structure/cable{
@@ -8698,7 +8692,7 @@ av
 by
 bU
 cl
-cu
+xQ
 cu
 cH
 cu

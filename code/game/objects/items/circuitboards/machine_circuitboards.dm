@@ -25,7 +25,7 @@
 	name = "Stasis Sleeper (Machine Board)"
 	build_path = /obj/machinery/stasis_sleeper
 	req_components = list(
-		/obj/item/stack/matter_bin = 1,
+		/obj/item/stock_parts/matter_bin = 1,
 		/obj/item/stock_parts/manipulator = 1,
 		/obj/item/stock_parts/capacitor = 1,
 		/obj/item/stack/cable_coil = 2,
