@@ -269,12 +269,16 @@
 
 /obj/machinery/stasis_sleeper/ui_data()
 	var/list/data = list()
+	var/chemical_list = list()
+	var/chaos_modifier = 0
+	var/blood_percent = 0
+
 	data["occupied"] = occupant ? 1 : 0
 	data["open"] = state_open
 	data["stasis"] = stasis_enabled
-	data["efficiency"] = efficiency
-	data["current_vol"] = reagents.total_volume
-	data["tot_capacity"] = reagents.maximum_volume
+	data["blood_levels"] = blood_percent
+	data["blood_status"] = "Patient either has no blood, or does not require it to function."
+	data["chemical_list"] = "Patient contains no reagents."
 
 	data["chems"] = list()
 	for(var/datum/reagent/R in reagents.reagent_list)
@@ -311,16 +315,23 @@
 		data["occupant"]["earLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_EARS)
 		data["occupant"]["liverLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_LIVER)
 		data["occupant"]["heartLoss"] = mob_occupant.getOrganLoss(ORGAN_SLOT_HEART)
-		data["occupant"]["reagents"] = list()
-		if(mob_occupant.reagents && mob_occupant.reagents.reagent_list.len)
+
+		if(mob_occupant.reagents.reagent_list.len)
 			for(var/datum/reagent/R in mob_occupant.reagents.reagent_list)
-				data["occupant"]["reagents"] += list(list("name" = R.name, "volume" = R.volume))
+				chemical_list += list(list("name" = R.name, "volume" = R.volume))
+			data["chemical_list"] = chemical_list
+
 		var/mob/living/carbon/C = mob_occupant
 		if(istype(C)) //Non-carbons shouldn't be able to enter sleepers, but this is to prevent runtimes if something ever breaks
 			if(mob_occupant.has_dna()) // Blood-stuff is mostly a copy-paste from the healthscanner.
+				blood_percent = round((C.blood_volume / BLOOD_VOLUME_NORMAL)*100)
 				var/blood_id = C.get_blood_id()
+				var/blood_warning = ""
+				if(blood_percent < 80)
+					blood_warning = "Patient has low blood levels."
+				if(blood_percent < 60)
+					blood_warning = "Patient has DANGEROUSLY low blood levels."
 				if(blood_id)
-					data["occupant"]["blood"] = list() // We can start populating this list.
 					var/blood_type = C.dna.blood_type
 					if(!(blood_id in GLOB.blood_reagent_types)) // special blood substance
 						var/datum/reagent/R = GLOB.chemical_reagents_list[blood_id]
@@ -328,10 +339,8 @@
 							blood_type = R.name
 						else
 							blood_type = blood_id
-					data["occupant"]["blood"]["maxBloodVolume"] = (BLOOD_VOLUME_NORMAL*C.blood_ratio)
-					data["occupant"]["blood"]["currentBloodVolume"] = C.blood_volume
-					data["occupant"]["blood"]["dangerBloodVolume"] = BLOOD_VOLUME_SAFE
-					data["occupant"]["blood"]["bloodType"] = blood_type
+					data["blood_status"] = "Patient has [blood_type] type blood. [blood_warning]"
+				data["blood_levels"] = blood_percent - (chaos_modifier * (rand(1,35)))
 	return data
 
 /obj/machinery/stasis_sleeper/ui_act(action, params)

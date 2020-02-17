@@ -1,5 +1,5 @@
 import { useBackend } from '../backend';
-import { Box, Section, LabeledList, Button, ProgressBar } from '../components';
+import { Box, Section, LabeledList, Button, ProgressBar, Flex, AnimatedNumber } from '../components';
 import { Fragment } from 'inferno';
 
 export const StasisSleeper = props => {
@@ -11,9 +11,6 @@ export const StasisSleeper = props => {
     stasis,
     dialysis,
     occupant = [],
-    efficiency,
-    current_vol,
-    tot_capacity,
   } = data;
 
   const preSortChems = data.chems || [];
@@ -85,6 +82,30 @@ export const StasisSleeper = props => {
                     color="bad" />
                 </LabeledList.Item>
               ))}
+            </LabeledList>
+            <LabeledList>
+              <LabeledList.Item
+                label={'Blood'}>
+                <ProgressBar
+                  value={data.blood_levels/100}
+                  color="bad">
+                  <AnimatedNumber value={data.blood_levels} />
+                </ProgressBar>
+                {data.blood_status}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label="Radiation Levels"
+                color={occupant.radiation ? 'bad' : 'good'}>
+                {occupant.radiation ? 'Radiation detected' : 'Radiation clear'}
+              </LabeledList.Item>
+            </LabeledList>
+          </Fragment>
+        )}
+      </Section>
+      <Flex spacing={1}>
+        <Flex.Item>
+          <Section title="Major Vitals">
+            <LabeledList>
               <LabeledList.Item
                 label="Cells"
                 color={occupant.cloneLoss ? 'bad' : 'good'}>
@@ -95,6 +116,17 @@ export const StasisSleeper = props => {
                 color={occupant.brainLoss ? 'bad' : 'good'}>
                 {occupant.brainLoss ? 'Abnormal' : 'Healthy'}
               </LabeledList.Item>
+              <LabeledList.Item
+                label="Heart"
+                color={occupant.heartLoss ? 'bad' : 'good'}>
+                {occupant.heartLoss ? 'Abnormal' : 'Healthy'}
+              </LabeledList.Item>
+            </LabeledList>
+          </Section>
+        </Flex.Item>
+        <Flex.Item grow={1}>
+          <Section title="Lesser Vitals">
+            <LabeledList>
               <LabeledList.Item
                 label="Eyes"
                 color={occupant.eyeLoss ? 'bad' : 'good'}>
@@ -110,14 +142,21 @@ export const StasisSleeper = props => {
                 color={occupant.liverLoss ? 'bad' : 'good'}>
                 {occupant.liverLoss ? 'Abnormal' : 'Healthy'}
               </LabeledList.Item>
-              <LabeledList.Item
-                label="Heart"
-                color={occupant.heartLoss ? 'bad' : 'good'}>
-                {occupant.heartLoss ? 'Abnormal' : 'Healthy'}
-              </LabeledList.Item>
             </LabeledList>
-          </Fragment>
-        )}
+          </Section>
+        </Flex.Item>
+      </Flex>
+      <Section title="Chemical Analysis">
+        <LabeledList.Item label="Chemical Contents">
+          {data.chemical_list.map(specificChem => (
+            <Box
+              key={specificChem.id}
+              color="good" >
+              {specificChem.volume} units of {specificChem.name}
+            </Box>
+          ),
+          )}
+        </LabeledList.Item>
       </Section>
       <Section
         title="Treatments"
