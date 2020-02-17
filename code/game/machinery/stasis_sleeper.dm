@@ -278,7 +278,7 @@
 	data["stasis"] = stasis_enabled
 	data["blood_levels"] = blood_percent
 	data["blood_status"] = "Patient either has no blood, or does not require it to function."
-	data["chemical_list"] = "Patient contains no reagents."
+	data["chemical_list"] = chemical_list
 
 	data["chems"] = list()
 	for(var/datum/reagent/R in reagents.reagent_list)
@@ -319,7 +319,8 @@
 		if(mob_occupant.reagents.reagent_list.len)
 			for(var/datum/reagent/R in mob_occupant.reagents.reagent_list)
 				chemical_list += list(list("name" = R.name, "volume" = R.volume))
-			data["chemical_list"] = chemical_list
+		else
+			chemical_list = "Patient has no reagents."
 
 		var/mob/living/carbon/C = mob_occupant
 		if(istype(C)) //Non-carbons shouldn't be able to enter sleepers, but this is to prevent runtimes if something ever breaks

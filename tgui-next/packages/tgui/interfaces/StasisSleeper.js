@@ -82,8 +82,6 @@ export const StasisSleeper = props => {
                     color="bad" />
                 </LabeledList.Item>
               ))}
-            </LabeledList>
-            <LabeledList>
               <LabeledList.Item
                 label={'Blood'}>
                 <ProgressBar
