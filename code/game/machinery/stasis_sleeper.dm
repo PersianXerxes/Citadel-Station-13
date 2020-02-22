@@ -12,6 +12,7 @@
 	active_power_usage = 340
 	req_access = list(ACCESS_CMO) //Used for reagent deletion and addition of non medicines
 	var/stasis_enabled = TRUE
+	var/dialysis_enabled = TRUE
 	var/last_stasis_sound = FALSE
 	var/stasis_can_toggle = 0
 	var/mattress_state = "stasis_on"
@@ -364,6 +365,7 @@
 				play_power_sound()
 				update_icon()
 		if("dialysis")
+			dialysis_enabled = !dialysis_enabled
 			return
 		if("inject")
 			var/chem = text2path(params["chem"])
@@ -381,14 +383,14 @@
 			if(allowed(usr))
 				if(!is_operational())
 					return
-				reagents.remove_reagent(chem, 10)
+				reagents.remove_reagent(chem, 1000)
 				return
 			if(chem in available_chems)
 				if(!is_operational())
 					return
 				/*var/datum/reagent/R = reagents.has_reagent(chem) //For when purity effects are in
 				if(R.purity < 0.8)*/
-				reagents.remove_reagent(chem, 10)
+				reagents.remove_reagent(chem, 1000)
 			else
 				visible_message("<span class='warning'>Access Denied.</span>")
 				playsound(src, 'sound/machines/terminal_prompt_deny.ogg', 50, 0)

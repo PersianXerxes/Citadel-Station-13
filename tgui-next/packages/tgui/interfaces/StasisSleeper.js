@@ -158,7 +158,7 @@ export const StasisSleeper = props => {
       </Section>
       <Section
         title="Treatments"
-        minHeight="205px"
+        minHeight="105px"
         buttons={(
           <Fragment>
             <Button
@@ -181,6 +181,20 @@ export const StasisSleeper = props => {
             disabled={!(occupied && chem.allowed)}
             width="140px"
             onClick={() => act('inject', {
+              chem: chem.id,
+            })}
+          />
+        ))}
+      </Section>
+      <Section
+        title="Purge Sleeper Chemicals">
+        {chems.map(chem => (
+          <Button
+            key={chem.name}
+            content={chem.name}
+            disabled={!(chem.allowed)}
+            width="140px"
+            onClick={() => act('purge', {
               chem: chem.id,
             })}
           />
