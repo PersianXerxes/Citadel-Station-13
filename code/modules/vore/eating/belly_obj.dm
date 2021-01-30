@@ -14,6 +14,7 @@
 /obj/belly
 	name = "belly"							// Name of this location
 	desc = "It's a belly! You're in it!"	// Flavor text description of inside sight/sound/smells/feels.
+	rad_flags = RAD_NO_CONTAMINATE | RAD_PROTECT_CONTENTS
 	var/vore_sound = "Gulp"					// Sound when ingesting someone
 	var/vore_verb = "ingest"				// Verb for eating with this in messages
 	var/release_sound = "Splatter"			// Sound for letting someone out.
@@ -247,7 +248,7 @@
 			for(var/mob/living/H in hearing_mobs)
 				if(H && H.client && (isturf(H.loc) || (H.loc != src.contents)))
 					var/sound/releasement = GLOB.pred_release_sounds[release_sound]
-					H.playsound_local(owner.loc, releasement, vol = 75, vary = 1, falloff = VORE_SOUND_FALLOFF)
+					H.playsound_local(owner.loc, releasement, 75, TRUE)
 				else if(H?.client && (H in contents))
 					var/sound/releasement = GLOB.prey_release_sounds[release_sound]
 					SEND_SOUND(H,releasement)
@@ -303,7 +304,7 @@
 			for(var/mob/living/H in hearing_mobs)
 				if(H && H.client && (isturf(H.loc) || (H.loc != src.contents)))
 					var/sound/releasement = GLOB.pred_release_sounds[release_sound]
-					H.playsound_local(owner.loc, releasement, vol = 75, vary = 1, falloff = VORE_SOUND_FALLOFF)
+					H.playsound_local(owner.loc, releasement, 75, TRUE)
 				else if(H?.client && (H in contents))
 					var/sound/releasement = GLOB.prey_release_sounds[release_sound]
 					SEND_SOUND(H,releasement)
@@ -365,7 +366,7 @@
 		for(var/mob/living/H in hearing_mobs)
 			if(H && H.client && (isturf(H.loc) || (H.loc != src.contents)))
 				var/sound/eating = GLOB.pred_vore_sounds[vore_sound]
-				H.playsound_local(owner.loc, eating, vol = 75, vary = 1, falloff = VORE_SOUND_FALLOFF)
+				H.playsound_local(owner.loc, eating, 75, TRUE)
 			else if(H?.client && (H in contents))
 				var/sound/eating = GLOB.prey_vore_sounds[vore_sound]
 				SEND_SOUND(H,eating)
@@ -465,7 +466,7 @@
 		log_attack("[key_name(owner)] digested [key_name(M)].")
 
 	// If digested prey is also a pred... anyone inside their bellies gets moved up.
-	if(is_vore_predator(M))
+	if(has_vore_belly(M))
 		M.release_vore_contents(include_absorbed = TRUE, silent = TRUE)
 
 	//Drop all items into the belly
@@ -512,7 +513,7 @@
 	if(!digested)
 		items_preserved |= item
 	else
-//		owner.nutrition += (5 * digested) // haha no.
+//		owner.adjust_nutrition(5 * digested) // haha no.
 		if(iscyborg(owner))
 			var/mob/living/silicon/robot/R = owner
 			R.cell.charge += (50 * digested)
@@ -541,8 +542,6 @@
 /obj/belly/proc/relay_resist(var/mob/living/R)
 	if (!(R in contents))
 		return  // User is not in this belly
-
-	R.setClickCooldown(50)
 
 	if(owner.stat) //If owner is stat (dead, KO) we can actually escape
 		to_chat(R,"<span class='warning'>You attempt to climb out of \the [lowertext(name)]. (This will take around [escapetime/10] seconds.)</span>")
@@ -586,14 +585,14 @@
 	if(is_wet)
 		for(var/mob/living/H in hearing_mobs)
 			if(H && H.client && (isturf(H.loc) || (H.loc != src.contents)))
-				H.playsound_local(owner.loc, pred_struggle_snuggle, vol = 75, vary = 1, falloff = VORE_SOUND_FALLOFF)
+				H.playsound_local(owner.loc, pred_struggle_snuggle, 75, TRUE)
 			else if(H && H.client && (H in contents))
 				SEND_SOUND(H,prey_struggle_snuggle)
 
 	else
 		for(var/mob/living/H in hearing_mobs)
 			if(H && H.client)
-				H.playsound_local(owner.loc, struggle_rustle, vol = 75, vary = 1, falloff = VORE_SOUND_FALLOFF)
+				H.playsound_local(owner.loc, struggle_rustle, 75, TRUE)
 
 	for(var/mob/living/H in hearing_mobs)
 		if(H && H.client && (isturf(H.loc)))

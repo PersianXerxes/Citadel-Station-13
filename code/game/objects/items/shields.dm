@@ -1,7 +1,8 @@
 /obj/item/shield
 	name = "shield"
 	icon = 'icons/obj/shields.dmi'
-	block_chance = 50
+	item_flags = ITEM_CAN_BLOCK
+	block_parry_data = /datum/block_parry_data/shield
 	armor = list("melee" = 50, "bullet" = 50, "laser" = 50, "energy" = 0, "bomb" = 30, "bio" = 0, "rad" = 0, "fire" = 80, "acid" = 70)
 	/// Shield flags
 	var/shield_flags = SHIELD_FLAGS_DEFAULT
@@ -22,6 +23,18 @@
 	/// Shield bashing push distance
 	var/shieldbash_push_distance = 1
 
+/datum/block_parry_data/shield
+	block_damage_multiplier = 0.25
+	block_stamina_efficiency = 2.5
+	block_stamina_cost_per_second = 2.5
+	block_slowdown = 0
+	block_lock_attacking = FALSE
+	block_lock_sprinting = TRUE
+	block_start_delay = 1.5
+	block_damage_absorption = 5
+	block_resting_stamina_penalty_multiplier = 2
+	block_projectile_mitigation = 75
+
 /obj/item/shield/examine(mob/user)
 	. = ..()
 	if(shield_flags & SHIELD_CAN_BASH)
@@ -33,11 +46,11 @@
 	return TRUE
 
 /obj/item/shield/alt_pre_attack(atom/A, mob/living/user, params)
-	user_shieldbash(user, A, user.a_intent != INTENT_HARM)
+	user_shieldbash(user, A, user.a_intent == INTENT_HARM)
 	return TRUE
 
 /obj/item/shield/altafterattack(atom/target, mob/user, proximity_flag, click_parameters)
-	user_shieldbash(user, target, user.a_intent != INTENT_HARM)
+	user_shieldbash(user, target, user.a_intent == INTENT_HARM)
 	return TRUE
 
 /obj/item/shield/proc/do_shieldbash_effect(mob/living/user, dir, harmful)
@@ -52,13 +65,13 @@
 			px = 12
 		if(WEST)
 			px = -12
-	var/oldpx = user.pixel_x
-	var/oldpy = user.pixel_y
-	animate(user, pixel_x = px, pixel_y = py, time = 3, easing = SINE_EASING | EASE_OUT, flags = ANIMATION_END_NOW)
-	animate(user, pixel_x = oldpx, pixel_y = oldpy, time = 3)
-	user.visible_message("<span class='warning'>[user] [harmful? "charges forwards with" : "sweeps"] [src]!</span>")
 	var/obj/effect/temp_visual/dir_setting/shield_bash/effect = new(user.loc, dir)
-	animate(effect, alpha = 0, pixel_x = px + 4, pixel_y = py + 4, time = 3)
+	effect.pixel_x = user.pixel_x - 32		//96x96 effect, -32.
+	effect.pixel_y = user.pixel_y - 32
+	user.visible_message("<span class='warning'>[user] [harmful? "charges forwards with" : "sweeps"] [src]!</span>")
+	animate(user, pixel_x = px, pixel_y = py, time = 3, easing = SINE_EASING | EASE_OUT, flags = ANIMATION_PARALLEL | ANIMATION_RELATIVE)
+	animate(user, pixel_x = -px, pixel_y = -py, time = 3, flags = ANIMATION_RELATIVE)
+	animate(effect, alpha = 0, pixel_x = px * 1.5, pixel_y = py * 1.5, time = 3, flags = ANIMATION_PARALLEL | ANIMATION_RELATIVE)
 
 /obj/item/shield/proc/bash_target(mob/living/user, mob/living/target, bashdir, harmful)
 	if(!(target.status_flags & CANKNOCKDOWN) || HAS_TRAIT(src, TRAIT_STUNIMMUNE))	// should probably add stun absorption check at some point I guess..
@@ -76,7 +89,7 @@
 		"<span class='warning'>[user] shoves you with [src]!</span>")
 	for(var/i in 1 to harmful? shieldbash_knockback : shieldbash_push_distance)
 		var/turf/new_turf = get_step(target, bashdir)
-		var/mob/living/carbon/human/H = locate() in new_turf
+		var/mob/living/carbon/human/H = locate() in (new_turf.contents - target)
 		if(H && harmful)
 			H.visible_message("<span class='warning'>[target] is sent crashing into [H]!</span>",
 			"<span class='userdanger'>[target] is sent crashing into you!</span>")
@@ -93,8 +106,8 @@
 	var/disarming = (target_downed && (shield_flags & SHIELD_BASH_GROUND_SLAM_DISARM)) || (shield_flags & SHIELD_BASH_ALWAYS_DISARM) || (wallhit && (shield_flags & SHIELD_BASH_WALL_DISARM))
 	var/knockdown = !target_downed && ((shield_flags & SHIELD_BASH_ALWAYS_KNOCKDOWN) || (wallhit && (shield_flags & SHIELD_BASH_WALL_KNOCKDOWN)))
 	if(shieldbash_stagger_duration || knockdown)
-		target.visible_message("<span class='warning'>[target] is knocked [knockdown? "to the floor" : "off balanace"]!</span>",
-		"<span class='userdanger'>You are knocked [knockdown? "to the floor" : "off balanace"]!</span>")
+		target.visible_message("<span class='warning'>[target] is knocked [knockdown? "to the floor" : "off balance"]!</span>",
+		"<span class='userdanger'>You are knocked [knockdown? "to the floor" : "off balance"]!</span>")
 	if(knockdown)
 		target.KnockToFloor(disarming)
 	else if(disarming)
@@ -107,25 +120,33 @@
 	return TRUE
 
 /obj/item/shield/proc/user_shieldbash(mob/living/user, atom/target, harmful)
+	if(!SEND_SIGNAL(user, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_ACTIVE)) //Combat mode has to be enabled for shield bashing
+		return FALSE
 	if(!(shield_flags & SHIELD_CAN_BASH))
 		to_chat(user, "<span class='warning'>[src] can't be used to shield bash!</span>")
+		return FALSE
+	if(!CHECK_MOBILITY(user, MOBILITY_STAND))
+		to_chat(user, "<span class='warning'>You can't bash with [src] while on the ground!</span>")
 		return FALSE
 	if(world.time < last_shieldbash + shieldbash_cooldown)
 		to_chat(user, "<span class='warning'>You can't bash with [src] again so soon!</span>")
 		return FALSE
-	if(isliving(target))		//GROUND SLAAAM
+	var/mob/living/livingtarget = target		//only access after an isliving check!
+	if(isliving(target) && !CHECK_MOBILITY(livingtarget, MOBILITY_STAND))		//GROUND SLAAAM
 		if(!(shield_flags & SHIELD_BASH_GROUND_SLAM))
 			to_chat(user, "<span class='warning'>You can't ground slam with [src]!</span>")
+			return FALSE
+		if(!user.UseStaminaBuffer(shieldbash_stamcost, warn = TRUE))
 			return FALSE
 		bash_target(user, target, NONE, harmful)
 		user.do_attack_animation(target, used_item = src)
 		playsound(src, harmful? "swing_hit" : 'sound/weapons/thudswoosh.ogg', 75, 1)
 		last_shieldbash = world.time
-		user.adjustStaminaLossBuffered(shieldbash_stamcost)
-		return 1
+		return TRUE
 	// Directional sweep!
 	last_shieldbash = world.time
-	user.adjustStaminaLossBuffered(shieldbash_stamcost)
+	if(!user.UseStaminaBuffer(shieldbash_stamcost, warn = TRUE))
+		return FALSE
 	// Since we are in combat mode, we can probably safely use the user's dir instead of getting their mouse pointing cardinal dir.
 	var/bashdir = user.dir
 	do_shieldbash_effect(user, bashdir, harmful)
@@ -148,6 +169,22 @@
 	icon_state = "shield_bash"
 	duration = 3
 
+/obj/item/shield/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+	if(ismovable(object))
+		var/atom/movable/AM = object
+		if(CHECK_BITFIELD(shield_flags, SHIELD_TRANSPARENT) && (AM.pass_flags & PASSGLASS))
+			return BLOCK_NONE
+	if(attack_type & ATTACK_TYPE_THROWN)
+		final_block_chance += 30
+	if(attack_type & ATTACK_TYPE_TACKLE)
+		final_block_chance = 100
+	. = ..()
+	if(. & BLOCK_SUCCESS)
+		on_shield_block(owner, object, damage, attack_text, attack_type, armour_penetration, attacker, def_zone, final_block_chance, block_return)
+
+/obj/item/shield/on_active_block(mob/living/owner, atom/object, damage, damage_blocked, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return, override_direction)
+	on_shield_block(owner, object, damage, attack_text, attack_type, armour_penetration, attacker, def_zone, final_block_chance)
+
 /obj/item/shield/riot
 	name = "riot shield"
 	desc = "A shield adept at blocking blunt objects from connecting with the torso of the shield wielder."
@@ -164,21 +201,9 @@
 	attack_verb = list("shoved", "bashed")
 	var/cooldown = 0 //shield bash cooldown. based on world.time
 	var/repair_material = /obj/item/stack/sheet/mineral/titanium
+	var/can_shatter = TRUE
 	shield_flags = SHIELD_FLAGS_DEFAULT | SHIELD_TRANSPARENT
-	max_integrity = 75
-
-/obj/item/shield/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
-	if(ismovableatom(object))
-		var/atom/movable/AM = object
-		if(CHECK_BITFIELD(shield_flags, SHIELD_TRANSPARENT) && (AM.pass_flags & PASSGLASS))
-			return BLOCK_NONE
-	if(attack_type & ATTACK_TYPE_THROWN)
-		final_block_chance += 30
-	if(attack_type & ATTACK_TYPE_TACKLE)
-		final_block_chance = 100
-	. = ..()
-	if(. & BLOCK_SUCCESS)
-		on_shield_block(owner, object, damage, attack_text, attack_type, armour_penetration, attacker, def_zone, final_block_chance, block_return)
+	max_integrity = 450
 
 /obj/item/shield/riot/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/melee/baton))
@@ -190,10 +215,10 @@
 		if(obj_integrity >= max_integrity)
 			to_chat(user, "<span class='warning'>[src] is already in perfect condition.</span>")
 		else
-			var/obj/item/stack/sheet/mineral/titanium/T = W
-			T.use(1)
+			var/obj/item/stack/S = W
+			S.use(1)
 			obj_integrity = max_integrity
-			to_chat(user, "<span class='notice'>You repair [src] with [T].</span>")
+			to_chat(user, "<span class='notice'>You repair [src] with [S].</span>")
 	else
 		return ..()
 
@@ -213,7 +238,7 @@
 	new /obj/item/shard((get_turf(src)))
 
 /obj/item/shield/riot/on_shield_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
-	if(obj_integrity <= damage)
+	if(can_shatter && (obj_integrity <= damage))
 		var/turf/T = get_turf(owner)
 		T.visible_message("<span class='warning'>[attack_text] destroys [src]!</span>")
 		shatter(owner)
@@ -231,13 +256,13 @@
 	lefthand_file = 'icons/mob/inhands/equipment/shields_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
 	shield_flags = SHIELD_FLAGS_DEFAULT
-	max_integrity = 55 //Weak
+	max_integrity = 300
 
-obj/item/shield/riot/bullet_proof
+/obj/item/shield/riot/bullet_proof
 	name = "bullet resistant shield"
 	desc = "A far more frail shield made of resistant plastics and kevlar meant to block ballistics."
 	armor = list("melee" = 30, "bullet" = 80, "laser" = 0, "energy" = 0, "bomb" = -40, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 50)
-	max_integrity = 55 //Weaker
+	max_integrity = 300
 
 /obj/item/shield/riot/roman
 	name = "\improper Roman shield"
@@ -248,13 +273,13 @@ obj/item/shield/riot/bullet_proof
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
 	repair_material = /obj/item/stack/sheet/mineral/wood
 	shield_flags = SHIELD_FLAGS_DEFAULT
-	max_integrity = 65
+	max_integrity = 250
 
 /obj/item/shield/riot/roman/fake
 	desc = "Bears an inscription on the inside: <i>\"Romanes venio domus\"</i>. It appears to be a bit flimsy."
 	block_chance = 0
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-	max_integrity = 30
+	max_integrity = 40
 
 /obj/item/shield/riot/roman/shatter(mob/living/carbon/human/owner)
 	playsound(owner, 'sound/effects/grillehit.ogg', 100)
@@ -267,12 +292,12 @@ obj/item/shield/riot/bullet_proof
 	item_state = "buckler"
 	lefthand_file = 'icons/mob/inhands/equipment/shields_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
-	custom_materials = null
+	custom_materials = list(/datum/material/wood = MINERAL_MATERIAL_AMOUNT * 10)
 	resistance_flags = FLAMMABLE
 	repair_material = /obj/item/stack/sheet/mineral/wood
 	block_chance = 30
 	shield_flags = SHIELD_FLAGS_DEFAULT
-	max_integrity = 55
+	max_integrity = 150
 
 /obj/item/shield/riot/buckler/shatter(mob/living/carbon/human/owner)
 	playsound(owner, 'sound/effects/bang.ogg', 50)
@@ -290,12 +315,15 @@ obj/item/shield/riot/bullet_proof
 	throw_speed = 3
 	throw_range = 4
 	w_class = WEIGHT_CLASS_NORMAL
-	var/active = 0
+	var/active = FALSE
 
 /obj/item/shield/riot/tele/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
 	if(!active)
 		return BLOCK_NONE
 	return ..()
+
+/obj/item/shield/riot/tele/can_active_block()
+	return ..() && active
 
 /obj/item/shield/riot/tele/attack_self(mob/living/user)
 	active = !active
@@ -324,13 +352,11 @@ obj/item/shield/riot/bullet_proof
 	armor = list("melee" = 25, "bullet" = 25, "laser" = 5, "energy" = 0, "bomb" = 30, "bio" = 0, "rad" = 0, "fire" = 70, "acid" = 80)
 	lefthand_file = 'icons/mob/inhands/equipment/shields_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
-	icon = 'icons/obj/items_and_weapons.dmi'
 	item_state = "metal"
 	icon_state = "makeshift_shield"
 	custom_materials = list(/datum/material/iron = 18000)
 	slot_flags = null
-	block_chance = 35
-	max_integrity = 100 //Made of metal welded together its strong but not unkillable
+	max_integrity = 300 //Made of metal welded together its strong but not unkillable
 	force = 10
 	throwforce = 7
 
@@ -340,8 +366,6 @@ obj/item/shield/riot/bullet_proof
 	armor = list("melee" = 95, "bullet" = 95, "laser" = 75, "energy" = 60, "bomb" = 90, "bio" = 90, "rad" = 0, "fire" = 90, "acid" = 10) //Armor for the item, dosnt transfer to user
 	item_state = "metal"
 	icon_state = "metal"
-	icon = 'icons/obj/items_and_weapons.dmi'
-	block_chance = 75 //1/4 shots will hit*
 	force = 16
 	slowdown = 2
 	throwforce = 15 //Massive pice of metal
@@ -352,25 +376,49 @@ obj/item/shield/riot/bullet_proof
 /obj/item/shield/riot/tower/swat
 	name = "swat shield"
 	desc = "A massive, heavy shield that can block a lot of attacks, can take a lot of abuse before breaking."
-	max_integrity = 175
-	block_chance = 50
+	max_integrity = 250
 
 /obj/item/shield/riot/implant
-	name = "riot tower shield"
-	desc = "A massive shield that can block a lot of attacks and can take a lot of abuse before breaking." //It cant break unless it is removed from the implant
+	name = "telescoping shield implant"
+	desc = "A compact, arm-mounted telescopic shield. While nigh-indestructible when powered by a host user, it will eventually overload from damage. Recharges while inside its implant."
 	item_state = "metal"
 	icon_state = "metal"
-	icon = 'icons/obj/items_and_weapons.dmi'
-	block_chance = 30 //May be big but hard to move around to block.
 	slowdown = 1
 	shield_flags = SHIELD_FLAGS_DEFAULT
-	item_flags = SLOWS_WHILE_IN_HAND
+	max_integrity = 100
+	obj_integrity = 100
+	can_shatter = FALSE
+	item_flags = SLOWS_WHILE_IN_HAND | ITEM_CAN_BLOCK
+	var/recharge_timerid
+	var/recharge_delay = 15 SECONDS
 
-/obj/item/shield/riot/implant/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
-	if(attack_type & ATTACK_TYPE_PROJECTILE)
-		final_block_chance = 60 //Massive shield
-	return ..()
+/// Entirely overriden take_damage. This shouldn't exist outside of an implant (other than maybe christmas).
+/obj/item/shield/riot/implant/take_damage(damage_amount, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, attack_dir, armour_penetration = 0)
+	obj_integrity -= damage_amount
+	if(obj_integrity < 0)
+		obj_integrity = 0
+	if(obj_integrity == 0)
+		if(ismob(loc))
+			var/mob/living/L = loc
+			playsound(src, 'sound/effects/glassbr3.ogg', 100)
+			L.visible_message("<span class='boldwarning'>[src] overloads from the damage sustained!</span>")
+			L.dropItemToGround(src)			//implant component catch hook will grab it.
 
+/obj/item/shield/riot/implant/Moved()
+	. = ..()
+	if(istype(loc, /obj/item/organ/cyberimp/arm/shield))
+		recharge_timerid = addtimer(CALLBACK(src, .proc/recharge), recharge_delay, flags = TIMER_STOPPABLE)
+	else		//extending
+		if(recharge_timerid)
+			deltimer(recharge_timerid)
+			recharge_timerid = null
+
+/obj/item/shield/riot/implant/proc/recharge()
+	if(obj_integrity == max_integrity)
+		return
+	obj_integrity = max_integrity
+	if(ismob(loc.loc))		//cyberimplant.user
+		to_chat(loc, "<span class='notice'>[src] has recharged its reinforcement matrix and is ready for use!</span>")
 
 /obj/item/shield/energy
 	name = "energy combat shield"
@@ -395,6 +443,12 @@ obj/item/shield/riot/bullet_proof
 	icon_state = "[base_icon_state]0"
 
 /obj/item/shield/energy/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+	if((attack_type & ATTACK_TYPE_PROJECTILE) && is_energy_reflectable_projectile(object))
+		block_return[BLOCK_RETURN_REDIRECT_METHOD] = REDIRECT_METHOD_DEFLECT
+		return BLOCK_SUCCESS | BLOCK_REDIRECTED | BLOCK_SHOULD_REDIRECT
+	return ..()
+
+/obj/item/shield/energy/active_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return, override_direction)
 	if((attack_type & ATTACK_TYPE_PROJECTILE) && is_energy_reflectable_projectile(object))
 		block_return[BLOCK_RETURN_REDIRECT_METHOD] = REDIRECT_METHOD_DEFLECT
 		return BLOCK_SUCCESS | BLOCK_REDIRECTED | BLOCK_SHOULD_REDIRECT

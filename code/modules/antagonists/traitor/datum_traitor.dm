@@ -4,6 +4,7 @@
 	antagpanel_category = "Traitor"
 	job_rank = ROLE_TRAITOR
 	antag_moodlet = /datum/mood_event/focused
+	skill_modifiers = list(/datum/skill_modifier/job/level/wiring/basic)
 	var/special_role = ROLE_TRAITOR
 	var/employer = "The Syndicate"
 	var/give_objectives = TRUE
@@ -46,9 +47,11 @@
 	for(var/C in GLOB.traitor_classes)
 		if(!(C in blacklist))
 			var/datum/traitor_class/class = GLOB.traitor_classes[C]
+			if(class.min_players > length(GLOB.joined_player_list))
+				continue
 			var/weight = LOGISTIC_FUNCTION(1.5*class.weight,chaos_weight,class.chaos,0)
 			weights[C] = weight * 1000
-	var/choice = pickweightAllowZero(weights)
+	var/choice = pickweight(weights, 0)
 	if(!choice)
 		choice = TRAITOR_HUMAN // it's an "easter egg"
 	var/datum/traitor_class/actual_class = GLOB.traitor_classes[choice]
@@ -209,7 +212,7 @@
 	)
 
 	var/where = "At your feet"
-	var/equipped_slot = mob.equip_in_one_of_slots(folder, slots)
+	var/equipped_slot = mob.equip_in_one_of_slots(folder, slots, critical = TRUE)
 	if (equipped_slot)
 		where = "In your [equipped_slot]"
 	to_chat(mob, "<BR><BR><span class='info'>[where] is a folder containing <b>secret documents</b> that another Syndicate group wants. We have set up a meeting with one of their agents on station to make an exchange. Exercise extreme caution as they cannot be trusted and may be hostile.</span><BR>")
@@ -239,7 +242,7 @@
 			if(objective.completable)
 				var/completion = objective.check_completion()
 				if(completion >= 1)
-					objectives_text += "<br><B>Objective #[count]</B>: [objective.explanation_text] <span class='greentext'><B>Success!</span>"
+					objectives_text += "<br><B>Objective #[count]</B>: [objective.explanation_text] <span class='greentext'><B>Success!</B></span>"
 				else if(completion <= 0)
 					objectives_text += "<br><B>Objective #[count]</B>: [objective.explanation_text] <span class='redtext'>Fail.</span>"
 					traitorwin = FALSE

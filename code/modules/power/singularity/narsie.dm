@@ -78,6 +78,7 @@
 	set_security_level("delta")
 	SSshuttle.registerHostileEnvironment(src)
 	SSshuttle.lockdown = TRUE
+	SSpersistence.station_was_destroyed = TRUE
 	sleep(600)
 	if(resolved == FALSE)
 		resolved = TRUE
@@ -127,7 +128,7 @@
 
 
 /obj/singularity/narsie/mezzer()
-	for(var/mob/living/carbon/M in viewers(consume_range, src))
+	for(var/mob/living/carbon/M in fov_viewers(consume_range, src))
 		if(M.stat == CONSCIOUS)
 			if(!iscultist(M))
 				to_chat(M, "<span class='cultsmall'>You feel conscious thought crumble away in an instant as you gaze upon [src.name]...</span>")
@@ -201,7 +202,7 @@
 //	if(defer_powernet_rebuild != 2)
 //		defer_powernet_rebuild = 1
 	for(var/atom/X in urange(consume_range,src,1))
-		if(isturf(X) || ismovableatom(X))
+		if(isturf(X) || ismovable(X))
 			consume(X)
 //	if(defer_powernet_rebuild != 2)
 //		defer_powernet_rebuild = 0

@@ -165,7 +165,7 @@
 /datum/action/innate/cult/blood_spell/emp/Activate()
 	owner.visible_message("<span class='warning'>[owner]'s hand flashes a bright blue!</span>", \
 						 "<span class='cultitalic'>You speak the cursed words, emitting an EMP blast from your hand.</span>")
-	empulse(owner, 2, 5)
+	empulse_using_range(owner, 8)
 	owner.whisper(invocation, language = /datum/language/common)
 	charges--
 	if(charges<=0)
@@ -343,7 +343,7 @@
 	icon = 'icons/obj/items_and_weapons.dmi'
 	icon_state = "disintegrate"
 	item_state = null
-	item_flags = NEEDS_PERMIT | ABSTRACT | DROPDEL | NO_ATTACK_CHAIN_SOFT_STAMCRIT
+	item_flags = NEEDS_PERMIT | ABSTRACT | DROPDEL
 
 	w_class = WEIGHT_CLASS_HUGE
 	throwforce = 0
@@ -445,27 +445,27 @@
 					if(L.move_resist < MOVE_FORCE_STRONG)
 						var/atom/throw_target = get_edge_target_turf(L, user.dir)
 						L.throw_at(throw_target, 7, 1, user)
-			else if(!iscultist(L))
+			else if(!is_servant_of_ratvar(L))
 				L.DefaultCombatKnockdown(160)
 				L.adjustStaminaLoss(140) //Ensures hard stamcrit
 				L.flash_act(1,1)
 				if(issilicon(target))
 					var/mob/living/silicon/S = L
-					S.emp_act(EMP_HEAVY)
+					S.emp_act(80)
 				else if(iscarbon(target))
 					var/mob/living/carbon/C = L
-					C.silent += CLAMP(12 - C.silent, 0, 6)
-					C.stuttering += CLAMP(30 - C.stuttering, 0, 15)
-					C.cultslurring += CLAMP(30 - C.cultslurring, 0, 15)
+					C.silent += clamp(12 - C.silent, 0, 6)
+					C.stuttering += clamp(30 - C.stuttering, 0, 15)
+					C.cultslurring += clamp(30 - C.cultslurring, 0, 15)
 					C.Jitter(15)
 			else					// cultstun no longer hardstuns + damages hostile cultists, instead debuffs them hard + deals some damage; debuffs for a bit longer since they don't add the clockie belligerent debuff
 				if(iscarbon(target))
 					var/mob/living/carbon/C = L
 					C.stuttering = max(10, C.stuttering)
 					C.drowsyness = max(10, C.drowsyness)
-					C.confused += CLAMP(20 - C.confused, 0, 10)
+					C.confused += clamp(20 - C.confused, 0, 10)
 				L.adjustBruteLoss(15)
-			to_chat(user, "<span class='cultitalic'>In an brilliant flash of red, [L] [iscultist(L) ? "writhes in pain" : "falls to the ground!"]</span>")
+			to_chat(user, "<span class='cultitalic'>In an brilliant flash of red, [L] [is_servant_of_ratvar(L) ? "writhes in pain!" : "falls to the ground!"]</span>")
 		uses--
 	..()
 
@@ -610,7 +610,7 @@
 				var/prev_color = candidate.color
 				candidate.color = "black"
 				if(do_after(user, 90, target = candidate))
-					candidate.emp_act(EMP_HEAVY)
+					candidate.emp_act(80)
 					var/construct_class = alert(user, "Please choose which type of construct you wish to create.",,"Juggernaut","Wraith","Artificer")
 					user.visible_message("<span class='danger'>The dark cloud receedes from what was formerly [candidate], revealing a\n [construct_class]!</span>")
 					switch(construct_class)
@@ -717,9 +717,9 @@
 						uses = 0
 					ratio *= -1
 					H.adjustOxyLoss((overall_damage*ratio) * (H.getOxyLoss() / overall_damage), 0)
-					H.adjustToxLoss((overall_damage*ratio) * (H.getToxLoss() / overall_damage), 0)
-					H.adjustFireLoss((overall_damage*ratio) * (H.getFireLoss() / overall_damage), 0)
-					H.adjustBruteLoss((overall_damage*ratio) * (H.getBruteLoss() / overall_damage), 0)
+					H.adjustToxLoss((overall_damage*ratio) * (H.getToxLoss() / overall_damage), 0, toxins_type = TOX_OMNI)
+					H.adjustFireLoss((overall_damage*ratio) * (H.getFireLoss() / overall_damage), 0, only_organic = FALSE)
+					H.adjustBruteLoss((overall_damage*ratio) * (H.getBruteLoss() / overall_damage), 0, only_organic = FALSE)
 					H.updatehealth()
 					playsound(get_turf(H), 'sound/magic/staff_healing.ogg', 25)
 					new /obj/effect/temp_visual/cult/sparks(get_turf(H))
@@ -801,7 +801,7 @@
 					var/turf/T = get_turf(user)
 					qdel(src)
 					var/datum/action/innate/cult/spear/S = new(user)
-					var/obj/item/twohanded/cult_spear/rite = new(T)
+					var/obj/item/cult_spear/rite = new(T)
 					S.Grant(user, rite)
 					rite.spear_act = S
 					if(user.put_in_hands(rite))

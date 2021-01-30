@@ -93,7 +93,7 @@
 	H.socks = random_socks(H.gender)
 	//H.eye_color = random_eye_color()
 	REMOVE_TRAIT(H, TRAIT_DISFIGURED, null) //
-	H.dna.features = random_features(H.dna.species?.id)
+	H.dna.features = random_features(H.dna.species?.id, H.gender)
 
 	// Apply Appearance
 	H.update_body(TRUE) // Outfit and underwear, also body and privates.
@@ -101,7 +101,7 @@
 	H.update_hair()
 	H.update_body_parts()
 
-	// Wait here til we deactivate power or go unconscious
+	// Wait here until we deactivate power or go unconscious
 	var/datum/antagonist/bloodsucker/bloodsuckerdatum = owner.mind.has_antag_datum(ANTAG_DATUM_BLOODSUCKER)
 	while (ContinueActive(owner) && istype(bloodsuckerdatum))//active && owner && owner.stat == CONSCIOUS)
 		bloodsuckerdatum.AddBloodVolume(-0.2)

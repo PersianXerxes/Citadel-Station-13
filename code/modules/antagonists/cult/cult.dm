@@ -100,7 +100,7 @@
 
 	var/T = new item_path(mob)
 	var/item_name = initial(item_path.name)
-	var/where = mob.equip_in_one_of_slots(T, slots)
+	var/where = mob.equip_in_one_of_slots(T, slots, critical = TRUE)
 	if(!where)
 		to_chat(mob, "<span class='userdanger'>Unfortunately, you weren't able to get a [item_name]. This is very bad and you should adminhelp immediately (press F1).</span>")
 		return 0
@@ -116,7 +116,7 @@
 	if(mob_override)
 		current = mob_override
 	current.faction |= "cult"
-	current.grant_language(/datum/language/narsie)
+	current.grant_language(/datum/language/narsie, TRUE, TRUE, LANGUAGE_CULTIST)
 	if(!cult_team?.cult_master)
 		vote.Grant(current)
 	communion.Grant(current)
@@ -134,7 +134,7 @@
 	if(mob_override)
 		current = mob_override
 	current.faction -= "cult"
-	current.remove_language(/datum/language/narsie)
+	current.remove_language(/datum/language/narsie, TRUE, TRUE, LANGUAGE_CULTIST)
 	vote.Remove(current)
 	communion.Remove(current)
 	magic.Remove(current)
@@ -142,8 +142,10 @@
 	if(ishuman(current))
 		var/mob/living/carbon/human/H = current
 		var/obj/item/organ/eyes/eyes = H.getorganslot(ORGAN_SLOT_EYES)
-		H.eye_color = eyes?.eye_color || initial(H.eye_color)
-		H.dna.update_ui_block(DNA_EYE_COLOR_BLOCK)
+		H.left_eye_color = eyes?.left_eye_color || initial(H.left_eye_color)
+		H.right_eye_color = eyes?.right_eye_color || initial(H.right_eye_color)
+		H.dna?.update_ui_block(DNA_LEFT_EYE_COLOR_BLOCK)
+		H.dna?.update_ui_block(DNA_RIGHT_EYE_COLOR_BLOCK)
 		REMOVE_TRAIT(H, TRAIT_CULT_EYES, "valid_cultist")
 		H.update_body()
 		H.cut_overlays()
@@ -236,8 +238,10 @@
 
 	if(ishuman(current))
 		var/mob/living/carbon/human/H = current
-		H.eye_color = initial(H.eye_color)
-		H.dna.update_ui_block(DNA_EYE_COLOR_BLOCK)
+		H.left_eye_color = initial(H.left_eye_color)
+		H.right_eye_color = initial(H.right_eye_color)
+		H.dna?.update_ui_block(DNA_LEFT_EYE_COLOR_BLOCK)
+		H.dna?.update_ui_block(DNA_RIGHT_EYE_COLOR_BLOCK)
 		REMOVE_TRAIT(H, TRAIT_CULT_EYES, "valid_cultist")
 		H.cut_overlays()
 		H.regenerate_icons()
@@ -291,6 +295,8 @@
 				++cultplayers
 			else
 				++alive
+	if(!alive)
+		return
 	var/ratio = cultplayers/alive
 	if(ratio > CULT_RISEN && !cult_risen)
 		for(var/datum/mind/B in members)
@@ -312,8 +318,10 @@
 /datum/team/cult/proc/rise(cultist)
 	if(ishuman(cultist))
 		var/mob/living/carbon/human/H = cultist
-		H.eye_color = "f00"
-		H.dna?.update_ui_block(DNA_EYE_COLOR_BLOCK)
+		H.left_eye_color = "f00"
+		H.right_eye_color = "f00"
+		H.dna?.update_ui_block(DNA_LEFT_EYE_COLOR_BLOCK)
+		H.dna?.update_ui_block(DNA_RIGHT_EYE_COLOR_BLOCK)
 		ADD_TRAIT(H, TRAIT_CULT_EYES, "valid_cultist")
 		H.update_body()
 
@@ -441,7 +449,7 @@
 			if(objective.completable)
 				var/completion = objective.check_completion()
 				if(completion >= 1)
-					parts += "<B>Objective #[count]</B>: [objective.explanation_text] <span class='greentext'><B>Success!</span>"
+					parts += "<B>Objective #[count]</B>: [objective.explanation_text] <span class='greentext'><B>Success!</B></span>"
 				else if(completion <= 0)
 					parts += "<B>Objective #[count]</B>: [objective.explanation_text] <span class='redtext'>Fail.</span>"
 				else

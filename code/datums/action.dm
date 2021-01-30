@@ -2,6 +2,7 @@
 #define AB_CHECK_STUN 2
 #define AB_CHECK_LYING 4
 #define AB_CHECK_CONSCIOUS 8
+#define AB_CHECK_ALIVE 16
 
 /datum/action
 	var/name = "Generic Action"
@@ -115,6 +116,9 @@
 	if(check_flags & AB_CHECK_CONSCIOUS)
 		if(owner.stat)
 			return FALSE
+	if(check_flags & AB_CHECK_ALIVE)
+		if(owner.stat == DEAD)
+			return FALSE
 	return TRUE
 
 /datum/action/proc/UpdateButtonIcon(status_only = FALSE, force = FALSE)
@@ -157,7 +161,7 @@
 
 /datum/action/proc/ApplyIcon(obj/screen/movable/action_button/current_button, force = FALSE)
 	if(icon_icon && button_icon_state && ((current_button.button_icon_state != button_icon_state) || force))
-		current_button.cut_overlays(TRUE)
+		current_button.cut_overlays()
 		current_button.add_overlay(mutable_appearance(icon_icon, button_icon_state))
 		current_button.button_icon_state = button_icon_state
 
@@ -171,10 +175,10 @@
 	if(!..())
 		return 0
 	var/mob/M = target
-	M.ghostize(1)
+	M.ghostize(can_reenter_corpse = TRUE, voluntary = TRUE)
 
 /datum/action/proc/OnUpdatedIcon()
-	UpdateButtonIcon()
+	addtimer(CALLBACK(src, .proc/UpdateButtonIcon), 1) //Hopefully runs after new icon overlays have been compiled.
 
 //Presets for item actions
 /datum/action/item_action
@@ -186,6 +190,8 @@
 
 /datum/action/item_action/New(Target)
 	..()
+	if(button_icon_state)
+		use_target_appearance = FALSE
 	var/obj/item/I = target
 	LAZYINITLIST(I.actions)
 	I.actions += src
@@ -271,6 +277,13 @@
 	if(istype(H))
 		H.toggle_welding_screen(owner)
 
+/datum/action/item_action/toggle_welding_screen/plasmaman
+
+/datum/action/item_action/toggle_welding_screen/plasmaman/Trigger()
+	var/obj/item/clothing/head/helmet/space/plasmaman/H = target
+	if(istype(H))
+		H.toggle_welding_screen(owner)
+
 /datum/action/item_action/toggle_headphones
 	name = "Toggle Headphones"
 	desc = "UNTZ UNTZ UNTZ"
@@ -345,6 +358,7 @@
 /datum/action/item_action/clock/quickbind
 	name = "Quickbind"
 	desc = "If you're seeing this, file a bug report."
+	use_target_appearance = FALSE
 	var/scripture_index = 0 //the index of the scripture we're associated with
 
 /datum/action/item_action/toggle_helmet_flashlight
@@ -727,14 +741,6 @@
 		UpdateButtonIcon()
 		if(next_use_time > world.time)
 			START_PROCESSING(SSfastprocess, src)
-
-
-//Stickmemes
-/datum/action/item_action/stickmen
-	name = "Summon Stick Minions"
-	desc = "Allows you to summon faithful stickmen allies to aide you in battle."
-	icon_icon = 'icons/mob/actions/actions_minor_antag.dmi'
-	button_icon_state = "art_summon"
 
 //surf_ss13
 /datum/action/item_action/bhop

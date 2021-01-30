@@ -141,7 +141,7 @@
 
 /obj/item/clothing/head/mob_holder/dropped(mob/user)
 	. = ..()
-	if(held_mob && isturf(loc))//don't release on soft-drops
+	if(held_mob && !ismob(loc))//don't release on soft-drops
 		release()
 
 /obj/item/clothing/head/mob_holder/proc/release()
@@ -164,7 +164,7 @@
 	release()
 
 /obj/item/clothing/head/mob_holder/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
-	if(!ishuman(M)) //monkeys holding monkeys holding monkeys...
+	if(M == held_mob || !ishuman(M)) //monkeys holding monkeys holding monkeys...
 		return FALSE
 	return ..()
 

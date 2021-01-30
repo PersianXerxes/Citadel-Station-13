@@ -68,7 +68,7 @@
 		/datum/reagent/consumable/sodiumchloride = 1,
 		/datum/reagent/consumable/blackpepper = 1,
 		/obj/item/reagent_containers/glass/bowl = 1,
-		/obj/item/reagent_containers/food/snacks/monkeycube = 1,
+		/obj/item/reagent_containers/food/snacks/cube/monkey = 1,
 		/obj/item/reagent_containers/food/snacks/grown/banana = 1
 	)
 	result = /obj/item/reagent_containers/food/snacks/soup/monkeysdelight
@@ -93,4 +93,17 @@
 		/obj/item/reagent_containers/food/snacks/grown/cabbage = 1
 	)
 	result = /obj/item/reagent_containers/food/snacks/salad/caesar
+	subcategory = CAT_SALAD
+
+
+/datum/crafting_recipe/food/edensalad
+	name = "Salad of Eden"
+	reqs = list(
+		/obj/item/reagent_containers/glass/bowl =1,
+		/obj/item/reagent_containers/food/snacks/grown/ambrosia/vulgaris = 1,
+		/obj/item/reagent_containers/food/snacks/grown/ambrosia/deus = 1,
+		/obj/item/reagent_containers/food/snacks/grown/ambrosia/gaia = 1,
+		/obj/item/reagent_containers/food/snacks/grown/peace = 1
+	)
+	result = /obj/item/reagent_containers/food/snacks/salad/edensalad
 	subcategory = CAT_SALAD

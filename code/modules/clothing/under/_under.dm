@@ -5,8 +5,9 @@
 	permeability_coefficient = 0.9
 	block_priority = BLOCK_PRIORITY_UNIFORM
 	slot_flags = ITEM_SLOT_ICLOTHING
-	armor = list("melee" = 0, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
-	mutantrace_variation = STYLE_DIGITIGRADE
+	armor = list("melee" = 0, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0, "wound" = 5)
+	mutantrace_variation = STYLE_DIGITIGRADE|USE_TAUR_CLIP_MASK
+	limb_integrity = 30
 	var/fitted = FEMALE_UNIFORM_FULL // For use in alternate clothing styles for women
 	var/has_sensor = HAS_SENSORS // For the crew computer
 	var/random_sensor = TRUE
@@ -26,18 +27,20 @@
 		. += mutable_appearance('icons/effects/item_damage.dmi', "damageduniform")
 	if(blood_DNA)
 		. += mutable_appearance('icons/effects/blood.dmi', "uniformblood", color = blood_DNA_to_color())
+	if(accessory_overlay)
+		. += accessory_overlay
 
 /obj/item/clothing/under/attackby(obj/item/I, mob/user, params)
 	if((has_sensor == BROKEN_SENSORS) && istype(I, /obj/item/stack/cable_coil))
 		var/obj/item/stack/cable_coil/C = I
-		C.use(1)
+		I.use_tool(src, user, 0, 1)
 		has_sensor = HAS_SENSORS
 		to_chat(user,"<span class='notice'>You repair the suit sensors on [src] with [C].</span>")
 		return 1
 	if(!attach_accessory(I, user))
 		return ..()
 
-/obj/item/clothing/under/update_clothes_damaged_state(damaging = TRUE)
+/obj/item/clothing/under/update_clothes_damaged_state()
 	..()
 	if(ismob(loc))
 		var/mob/M = loc
@@ -99,8 +102,7 @@
 			if((flags_inv & HIDEACCESSORY) || (A.flags_inv & HIDEACCESSORY))
 				return TRUE
 
-			var/accessory_color = attached_accessory.icon_state
-			accessory_overlay = mutable_appearance('icons/mob/clothing/accessories.dmi', "[accessory_color]")
+			accessory_overlay = mutable_appearance('icons/mob/clothing/accessories.dmi', attached_accessory.icon_state)
 			accessory_overlay.alpha = attached_accessory.alpha
 			accessory_overlay.color = attached_accessory.color
 
@@ -242,32 +244,33 @@
 /obj/item/clothing/under/proc/rolldown()
 	if(!can_use(usr))
 		return
-	if(!can_adjust)
-		to_chat(usr, "<span class='warning'>You cannot wear this suit any differently!</span>")
-		return
-	if(toggle_jumpsuit_adjust())
-		to_chat(usr, "<span class='notice'>You adjust the suit to wear it more casually.</span>")
-	else
-		to_chat(usr, "<span class='notice'>You adjust the suit back to normal.</span>")
-	if(ishuman(usr))
+	if(toggle_jumpsuit_adjust() && ishuman(usr))
 		var/mob/living/carbon/human/H = usr
 		H.update_inv_w_uniform()
 		H.update_body()
 
 /obj/item/clothing/under/proc/toggle_jumpsuit_adjust()
+	if(!can_adjust)
+		to_chat(usr, "<span class='warning'>You cannot wear this suit any differently!</span>")
+		return FALSE
 	adjusted = !adjusted
 
 	if(adjusted)
+		to_chat(usr, "<span class='notice'>You adjust the suit to wear it more casually.</span>")
 		if(fitted != FEMALE_UNIFORM_TOP)
 			fitted = NO_FEMALE_UNIFORM
 		if(!alt_covers_chest) // for the special snowflake suits that expose the chest when adjusted
 			body_parts_covered &= ~CHEST
+			mutantrace_variation &= ~USE_TAUR_CLIP_MASK //How are we supposed to see the uniform otherwise?
 	else
+		to_chat(usr, "<span class='notice'>You adjust the suit back to normal.</span>")
 		fitted = initial(fitted)
 		if(!alt_covers_chest)
 			body_parts_covered |= CHEST
+			if(initial(mutantrace_variation) & USE_TAUR_CLIP_MASK)
+				mutantrace_variation |= USE_TAUR_CLIP_MASK
 
-	return adjusted
+	return TRUE
 
 /obj/item/clothing/under/rank
 	dying_key = DYE_REGISTRY_UNDER
