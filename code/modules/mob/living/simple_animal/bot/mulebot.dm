@@ -138,7 +138,7 @@
 		add_overlay(load)
 	return
 
-/mob/living/simple_animal/bot/mulebot/ex_act(severity)
+/mob/living/simple_animal/bot/mulebot/ex_act(severity, target, origin)
 	unload(0)
 	switch(severity)
 		if(1)
@@ -750,6 +750,12 @@
 /mob/living/simple_animal/bot/mulebot/remove_air(amount) //To prevent riders suffocating
 	if(loc)
 		return loc.remove_air(amount)
+	else
+		return null
+
+/mob/living/simple_animal/bot/mulebot/remove_air_ratio(ratio)
+	if(loc)
+		return loc.remove_air_ratio(ratio)
 	else
 		return null
 

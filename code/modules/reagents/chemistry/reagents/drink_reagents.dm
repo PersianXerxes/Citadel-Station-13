@@ -47,7 +47,7 @@
 
 /datum/reagent/consumable/limejuice/on_mob_life(mob/living/carbon/M)
 	if(M.getToxLoss() && prob(20))
-		M.adjustToxLoss(-1*REM, 0)
+		M.adjustToxLoss(-1*REAGENTS_EFFECT_MULTIPLIER, 0)
 		. = 1
 	..()
 
@@ -505,11 +505,11 @@
 	value = REAGENT_VALUE_COMMON
 
 /datum/reagent/consumable/nuka_cola/on_mob_metabolize(mob/living/carbon/M)
-	M.add_movespeed_modifier(/datum/movespeed_modifier/reagent/meth)
+	M.add_movespeed_modifier(/datum/movespeed_modifier/reagent/nuka_cola)
 	return ..()
 
 /datum/reagent/consumable/nuka_cola/on_mob_end_metabolize(mob/living/carbon/M)
-	M.remove_movespeed_modifier(/datum/movespeed_modifier/reagent/meth)
+	M.remove_movespeed_modifier(/datum/movespeed_modifier/reagent/nuka_cola)
 	return ..()
 
 /datum/reagent/consumable/nuka_cola/on_mob_life(mob/living/carbon/M)

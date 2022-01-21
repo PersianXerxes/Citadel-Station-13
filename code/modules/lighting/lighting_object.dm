@@ -10,6 +10,7 @@
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	layer            = LIGHTING_LAYER
 	invisibility     = INVISIBILITY_LIGHTING
+	vis_flags        = VIS_HIDE
 
 	var/needs_update = FALSE
 	var/turf/myturf
@@ -123,7 +124,7 @@
 
 // Variety of overrides so the overlays don't get affected by weird things.
 
-/atom/movable/lighting_object/ex_act(severity)
+/atom/movable/lighting_object/ex_act(severity, target, origin)
 	return 0
 
 /atom/movable/lighting_object/singularity_act()

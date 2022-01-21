@@ -27,6 +27,12 @@
 	if(do_update)
 		update()
 
+/obj/item/organ/genital/Destroy()
+	if(linked_organ?.linked_organ == src)
+		linked_organ.linked_organ = null
+	linked_organ = null
+	. = ..()
+
 /obj/item/organ/genital/proc/set_aroused_state(new_state,cause = "manual toggle")
 	if(!(genital_flags & GENITAL_CAN_AROUSE))
 		return FALSE
@@ -106,7 +112,7 @@
 
 	var/list/genital_list = list()
 	for(var/obj/item/organ/genital/G in internal_organs)
-		if(!CHECK_BITFIELD(G.genital_flags, GENITAL_INTERNAL))
+		if(!(G.genital_flags & GENITAL_INTERNAL))
 			genital_list += G
 	if(!genital_list.len) //There is nothing to expose
 		return
@@ -139,6 +145,9 @@
 		else
 			to_chat(src,"<span class='userlove'>You can't make that genital [picked_organ.aroused_state ? "unaroused" : "aroused"]!</span>")
 		picked_organ.update_appearance()
+		if(ishuman(src))
+			var/mob/living/carbon/human/human = src
+			human.update_genitals()
 	return
 
 
@@ -150,7 +159,7 @@
 /obj/item/organ/genital/proc/update_size()
 	return
 
-/obj/item/organ/genital/proc/update_appearance()
+/obj/item/organ/genital/proc/update_appearance_genitals()
 	if(!owner || owner.stat == DEAD)
 		aroused_state = FALSE
 
@@ -187,7 +196,7 @@
 	. = ..()
 	if(.)
 		update()
-		RegisterSignal(owner, COMSIG_MOB_DEATH, .proc/update_appearance)
+		RegisterSignal(owner, COMSIG_MOB_DEATH, .proc/update_appearance_genitals)
 		if(genital_flags & GENITAL_THROUGH_CLOTHES)
 			owner.exposed_genitals += src
 

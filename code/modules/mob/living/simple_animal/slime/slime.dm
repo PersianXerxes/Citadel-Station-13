@@ -129,7 +129,7 @@
 	coretype = text2path("/obj/item/slime_extract/[sanitizedcolour]")
 	regenerate_icons()
 
-/mob/living/simple_animal/slime/proc/update_name()
+/mob/living/simple_animal/slime/update_name()
 	if(slime_name_regex.Find(name))
 		number = rand(1, 1000)
 		name = "[colour] [is_adult ? "adult" : "baby"] slime ([number])"
@@ -466,7 +466,7 @@
 
 	SStun = world.time + rand(20,60)
 	spawn(0)
-		DISABLE_BITFIELD(mobility_flags, MOBILITY_MOVE)
+		mobility_flags &= ~(MOBILITY_MOVE)
 		if(user)
 			step_away(src,user,15)
 		sleep(3)

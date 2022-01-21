@@ -229,6 +229,14 @@
 	mob_overlay_icon = 'icons/mob/clothing/custom_w.dmi'
 	icon_state = "stalker"
 
+/obj/item/clothing/mask/gas/military
+	name = "Military Gas Mask"
+	desc = "A rare PMC gas mask, one of the very expensive kinds. The inside looks comfortable to wear for a while. The blood red eyes however seem to stare back at you. Creepy."
+	icon = 'icons/obj/custom.dmi'
+	item_state = "mgas"
+	mob_overlay_icon = 'icons/mob/clothing/custom_w.dmi'
+	icon_state = "mgas"
+
 /obj/item/reagent_containers/food/drinks/flask/steel
 	name = "The End"
 	desc = "A plain steel flask, sealed by lock and key. The front is inscribed with The End."
@@ -602,11 +610,20 @@
 	mob_overlay_icon = 'icons/mob/clothing/custom_w.dmi'
 	icon_state = "mmask"
 
-/obj/item/clothing/suit/smaiden
-	name = "shrine maiden"
+/obj/item/clothing/under/smaiden
+	name = "shrine maiden outfit"
 	desc = "Seems questionably tight for religious purposes."
 	icon_state = "smaiden"
 	item_state = "smaiden"
+	icon = 'icons/obj/custom.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/custom_w.dmi'
+	mutantrace_variation = NONE
+
+/obj/item/clothing/suit/spacehoodie
+	name = "space hoodie"
+	desc = "You are not sure why this hoodie exists... but it does and it is comfortable."
+	icon_state = "starhoodie"
+	item_state = "starhoodie"
 	icon = 'icons/obj/custom.dmi'
 	mob_overlay_icon = 'icons/mob/clothing/custom_w.dmi'
 	mutantrace_variation = NONE

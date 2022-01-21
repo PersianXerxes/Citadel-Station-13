@@ -111,23 +111,23 @@
 	mecha_log_message("Hit by projectile. Type: [Proj.name]([Proj.flag]).", color="red")
 	. = ..()
 
-/obj/mecha/ex_act(severity, target)
+/obj/mecha/ex_act(severity, target, origin)
 	mecha_log_message("Affected by explosion of severity: [severity].", color="red")
 	if(prob(deflect_chance))
 		severity++
 		log_append_to_last("Armor saved, changing severity to [severity].")
 	. = ..()
 
-/obj/mecha/contents_explosion(severity, target)
+/obj/mecha/contents_explosion(severity, target, origin)
 	severity++
 	for(var/X in equipment)
 		var/obj/item/mecha_parts/mecha_equipment/ME = X
-		ME.ex_act(severity,target)
+		ME.ex_act(severity, target, origin)
 	for(var/Y in trackers)
 		var/obj/item/mecha_parts/mecha_tracking/MT = Y
-		MT.ex_act(severity, target)
+		MT.ex_act(severity, target, origin)
 	if(occupant)
-		occupant.ex_act(severity,target)
+		occupant.ex_act(severity, target, origin)
 
 /obj/mecha/handle_atom_del(atom/A)
 	if(A == occupant)
@@ -140,7 +140,7 @@
 	if (. & EMP_PROTECT_SELF)
 		return
 	if(get_charge())
-		use_power(cell.charge*severity/100)
+		use_power((cell.charge/3)*(severity*0.005))
 		take_damage(severity/3, BURN, "energy", 1)
 	mecha_log_message("EMP detected", color="red")
 

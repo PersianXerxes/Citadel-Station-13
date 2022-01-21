@@ -13,8 +13,12 @@
 			T.assign_exchange_role(SSticker.mode.exchange_blue)
 		objective_count += 1					//Exchange counts towards number of objectives
 	var/toa = CONFIG_GET(number/traitor_objectives_amount)
+	var/attempts = 0
 	for(var/i = objective_count, i < toa, i++)
-		forge_single_objective(T)
+		var/success = FALSE
+		while(!success && attempts < max(toa*10, 100))
+			success = forge_single_objective(T)
+			attempts += 1
 	if(!(locate(/datum/objective/escape) in T.objectives))
 		var/datum/objective/escape/escape_objective = new
 		escape_objective.owner = T.owner
@@ -24,17 +28,11 @@
 /datum/traitor_class/human/forge_single_objective(datum/antagonist/traitor/T)
 	.=1
 	var/assassin_prob = 50
-	var/is_dynamic = FALSE
 	var/datum/game_mode/dynamic/mode
 	if(istype(SSticker.mode,/datum/game_mode/dynamic))
 		mode = SSticker.mode
-		is_dynamic = TRUE
 		assassin_prob = max(0,mode.threat_level-20)
 	if(prob(assassin_prob))
-		if(is_dynamic)
-			var/threat_spent = CONFIG_GET(number/dynamic_assassinate_cost)
-			mode.spend_threat(threat_spent)
-			mode.log_threat("[T.owner.name] added [threat_spent] on an assassination target.")
 		var/list/active_ais = active_ais()
 		if(active_ais.len && prob(100/GLOB.joined_player_list.len))
 			var/datum/objective/destroy/destroy_objective = new

@@ -89,15 +89,15 @@
 		var/datum/species/S = dna.species
 
 		if(S.breathid == "o2")
-			throw_alert("not_enough_oxy", /obj/screen/alert/not_enough_oxy)
+			throw_alert("not_enough_oxy", /atom/movable/screen/alert/not_enough_oxy)
 		else if(S.breathid == "tox")
-			throw_alert("not_enough_tox", /obj/screen/alert/not_enough_tox)
+			throw_alert("not_enough_tox", /atom/movable/screen/alert/not_enough_tox)
 		else if(S.breathid == "co2")
-			throw_alert("not_enough_co2", /obj/screen/alert/not_enough_co2)
+			throw_alert("not_enough_co2", /atom/movable/screen/alert/not_enough_co2)
 		else if(S.breathid == "n2")
-			throw_alert("not_enough_nitro", /obj/screen/alert/not_enough_nitro)
+			throw_alert("not_enough_nitro", /atom/movable/screen/alert/not_enough_nitro)
 		else if(S.breathid == "ch3br")
-			throw_alert("not_enough_ch3br", /obj/screen/alert/not_enough_ch3br)
+			throw_alert("not_enough_ch3br", /atom/movable/screen/alert/not_enough_ch3br)
 
 		return FALSE
 	else
@@ -214,7 +214,7 @@
 	var/missing_body_parts_flags = ~get_body_parts_flags()
 	var/max_protection = 1
 	if(missing_body_parts_flags) //I don't like copypasta as much as proc overhead. Do you want me to make these into a macro?
-		DISABLE_BITFIELD(thermal_protection_flags, missing_body_parts_flags)
+		thermal_protection_flags &= ~(missing_body_parts_flags)
 		if(missing_body_parts_flags & HEAD)
 			max_protection -= THERMAL_PROTECTION_HEAD
 		if(missing_body_parts_flags & CHEST)
@@ -273,7 +273,7 @@
 		if(getToxLoss() >= 45 && nutrition > 20 && !HAS_TRAIT(src, TRAIT_ROBOTIC_ORGANISM))
 			lastpuke += prob(50)
 			if(lastpuke >= 50) // about 25 second delay I guess
-				vomit(20, toxic = TRUE)
+				vomit(20)
 				lastpuke = 0
 
 

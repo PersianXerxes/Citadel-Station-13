@@ -13,7 +13,7 @@ Configuration:
 
 Usage:
 - Define mouse event procs on your (probably HUD) object and simply call the show and hide procs respectively:
-	/obj/screen/hud
+	/atom/movable/screen/hud
 		MouseEntered(location, control, params)
 			usr.client.tooltip.show(params, title = src.name, content = src.desc)
 
@@ -51,7 +51,7 @@ Notes:
 
 /datum/tooltip/proc/show(atom/movable/thing, params = null, title = null, content = null, theme = "default", special = "none")
 	if (!thing || !params || (!title && !content) || !owner || !isnum(world.icon_size))
-		return 0
+		return FALSE
 	if (!init)
 		//Initialize some vars
 		init = 1
@@ -83,7 +83,7 @@ Notes:
 	if (queueHide)
 		hide()
 
-	return 1
+	return TRUE
 
 
 /datum/tooltip/proc/hide()
@@ -119,7 +119,42 @@ Notes:
 //Includes sanity checks.
 /proc/closeToolTip(mob/user)
 	if(istype(user))
-		if(user.client && user.client.tooltips)
-			user.client.tooltips.hide()
+		if(user.client)
+			var/client/client = user.client
+			if(client.tooltips)
+				client.tooltips.hide()
+			deltimer(client.tip_timer) //delete any in-progress timer if the mouse is moved off the item before it finishes
+			client.tip_timer = null
 
+/**
+ * # `get_tooltip_data()`
+ *
+ * If set, will return a list for the tooltip (that will also be put together in a `Join()`)
+ * However, if returning `null`, the tooltip will not be shown as #14942 changed it.
+ *
+ * Though no tooltips will be created for atoms that have `tooltips = FALSE`
+*/
+/atom/movable/proc/get_tooltip_data()
+	return
 
+/atom/movable/MouseEntered(location, control, params)
+	. = ..()
+	if(tooltips)
+		if(!QDELETED(src) && usr?.client.prefs.enable_tips)
+			var/list/tooltip_data = get_tooltip_data()
+			if(length(tooltip_data))
+				var/examine_data = tooltip_data.Join("<br />")
+				var/timedelay = max(usr.client.prefs.tip_delay * 0.01, 0.01) // I heard multiplying is faster, also runtimes from very low/negative numbers
+				usr.client.tip_timer = addtimer(CALLBACK(GLOBAL_PROC, .proc/openToolTip, usr, src, params, name, examine_data), timedelay, TIMER_STOPPABLE)
+
+/atom/movable/MouseExited(location, control, params)
+	. = ..()
+	closeToolTip(usr)
+
+/client/MouseDown(object, location, control, params)
+	closeToolTip(usr)
+	. = ..()
+
+/client
+	/// Timers are now handled by clients, not by doing a mess on the item and multiple people overwriting a single timer on the object, have fun.
+	var/tip_timer = null

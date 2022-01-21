@@ -41,6 +41,13 @@
 /obj/item/crowbar/brass/family
 	toolspeed = 1
 
+/obj/item/crowbar/ashwalker
+	name = "bone crowbar"
+	desc = "A rudimentary crowbar made of bones."
+	icon = 'icons/obj/mining.dmi'
+	icon_state = "crowbar_bone"
+	toolspeed = 0.75
+
 /obj/item/crowbar/bronze
 	name = "bronze plated crowbar"
 	desc = "A bronze plated crowbar."
@@ -66,6 +73,12 @@
 	icon_state = "crowbar_large"
 	item_state = "crowbar"
 	toolspeed = 0.5
+
+/obj/item/crowbar/large/heavy
+	name = "heavy crowbar"
+	desc = "It's a big crowbar. It doesn't fit in your pockets, because it's big. It feels oddly heavy.."
+	force = 20
+	icon_state = "crowbar_powergame"
 
 /obj/item/crowbar/cyborg
 	name = "hydraulic crowbar"

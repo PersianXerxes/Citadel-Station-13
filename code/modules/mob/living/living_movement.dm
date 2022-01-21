@@ -36,7 +36,11 @@
 	if(ismob(mover))
 		if(mover in buckled_mobs)
 			return TRUE
+		if(HAS_TRAIT(mover, TRAIT_BEING_CARRIED))
+			return TRUE	//We're being carried and our carrier managed to pass, ergo, let us pass aswell.
 	var/mob/living/L = mover		//typecast first, check isliving and only check this if living using short circuit
+	if(isliving(L) && lying && L.lying)		//if we're both lying down and aren't already being thrown/shipped around, don't pass
+		return FALSE
 	return (!density || (isliving(mover)? L.can_move_under_living(src) : !mover.density))
 
 /mob/living/toggle_move_intent()
@@ -101,31 +105,6 @@
 
 	if(lying && !buckled && prob(getBruteLoss()*200/maxHealth))
 		makeTrail(newloc, T, old_direction)
-
-	if(causes_dirt_buildup_on_floor && (movement_type & GROUND))
-		dirt_buildup()
-
-/**
- * Attempts to make the floor dirty.
- */
-/mob/living/proc/dirt_buildup(strength = 1)
-	var/turf/open/T = loc
-	if(!istype(T) || !T.dirt_buildup_allowed)
-		return
-	var/area/A = T.loc
-	if(!A.dirt_buildup_allowed)
-		return
-	var/multiplier = CONFIG_GET(number/turf_dirty_multiplier)
-	strength *= multiplier
-	var/obj/effect/decal/cleanable/dirt/D = locate() in T
-	if(D)
-		D.dirty(strength)
-	else
-		T.dirtyness += strength
-		if(T.dirtyness >= (isnull(T.dirt_spawn_threshold)? CONFIG_GET(number/turf_dirt_threshold) : T.dirt_spawn_threshold))
-			D = new /obj/effect/decal/cleanable/dirt(T)
-			D.dirty(T.dirt_spawn_threshold - T.dirtyness)
-			T.dirtyness = 0		// reset.
 
 /mob/living/Move_Pulled(atom/A)
 	. = ..()

@@ -77,7 +77,7 @@ GLOBAL_VAR(antag_prototypes)
 	return common_commands
 
 /datum/mind/proc/get_special_statuses()
-	var/list/result = list()
+	var/list/result = LAZYCOPY(special_statuses)
 	if(!current)
 		result += "<span class='bad'>No body!</span>"
 	if(current && HAS_TRAIT(current, TRAIT_MINDSHIELD))
@@ -101,6 +101,10 @@ GLOBAL_VAR(antag_prototypes)
 	out += "Mind currently owned by key: [key] [active?"(synced)":"(not synced)"]<br>"
 	out += "Assigned role: [assigned_role]. <a href='?src=[REF(src)];role_edit=1'>Edit</a><br>"
 	out += "Faction and special role: <b><font color='red'>[special_role]</font></b><br>"
+	var/datum/component/activity/activity = current.GetComponent(/datum/component/activity)
+	if(activity)
+		out += "Activity level: [activity.activity_level]<br>"
+		out += "Hasn't changed areas in approximately [activity.not_moved_counter] seconds<br>"
 
 	var/special_statuses = get_special_statuses()
 	if(length(special_statuses))

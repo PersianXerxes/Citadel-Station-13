@@ -187,7 +187,7 @@
 	switch(activation_type)
 		if(SLIME_ACTIVATE_MINOR)
 			user.adjust_nutrition(50)
-			user.blood_volume += 50
+			user.adjust_integration_blood(50)
 			to_chat(user, "<span class='notice'>You activate [src], and your body is refilled with fresh slime jelly!</span>")
 			return 150
 
@@ -735,7 +735,10 @@
 	if(jb)
 		to_chat(user, "<span class='warning'>Your mind goes blank as you attempt to use the potion.</span>")
 		return
+	try_transfer_mind(SM, user)
 
+/obj/item/slimepotion/transference/proc/try_transfer_mind(mob/living/simple_animal/SM, mob/user)
+	set waitfor = FALSE
 	prompted = 1
 	if(alert("This will permanently transfer your consciousness to [SM]. Are you sure you want to do this?",,"Yes","No")=="No")
 		prompted = 0

@@ -34,13 +34,13 @@
 	. = ..()
 	UnregisterSignal(source, COMSIG_MOB_ATTACK_HAND)
 
-/datum/element/wuv/proc/on_attack_hand(datum/source, mob/user)
+/datum/element/wuv/proc/on_attack_hand(datum/source, mob/user, act_intent)
 	var/mob/living/L = source
 
 	if(L.stat == DEAD)
 		return
 	//we want to delay the effect to be displayed after the mob is petted, not before.
-	switch(user.a_intent)
+	switch(act_intent)
 		if(INTENT_HARM)
 			addtimer(CALLBACK(src, .proc/kick_the_dog, source, user), 1)
 		if(INTENT_HELP)
@@ -52,7 +52,7 @@
 	new /obj/effect/temp_visual/heart(target.loc)
 	if(pet_emote)
 		target.emote("me", pet_type, pet_emote)
-	if(pet_moodlet && !CHECK_BITFIELD(target.flags_1, HOLOGRAM_1)) //prevents unlimited happiness petting park exploit.
+	if(pet_moodlet && !(target.flags_1 & HOLOGRAM_1)) //prevents unlimited happiness petting park exploit.
 		SEND_SIGNAL(user, COMSIG_ADD_MOOD_EVENT, target, pet_moodlet, target)
 
 /datum/element/wuv/proc/kick_the_dog(mob/target, mob/user)
@@ -60,5 +60,5 @@
 		return
 	if(punt_emote)
 		target.emote("me", punt_type, punt_emote)
-	if(punt_moodlet && !CHECK_BITFIELD(target.flags_1, HOLOGRAM_1))
+	if(punt_moodlet && !(target.flags_1 & HOLOGRAM_1))
 		SEND_SIGNAL(user, COMSIG_ADD_MOOD_EVENT, target, punt_moodlet, target)

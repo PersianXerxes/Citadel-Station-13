@@ -319,7 +319,10 @@
 					var/atom/A = I
 					if(!QDELETED(A))
 						A.ex_act(severity)
-				gib()
+				if(istype(origin, /datum/explosion))
+					gib(was_explosion = origin)
+				else
+					gib()
 				return
 			else
 				brute_loss = 500
@@ -409,7 +412,7 @@
 		return
 	var/informed = FALSE
 	if(isrobotic(src))
-		apply_status_effect(/datum/status_effect/no_combat_mode/robotic_emp, severity / 20)
+		apply_status_effect(/datum/status_effect/robotic_emp, severity / 20)
 	severity *= 0.5
 	var/do_not_stun = FALSE
 	if(HAS_TRAIT(src, TRAIT_ROBOTIC_ORGANISM))
